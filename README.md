@@ -84,3 +84,5 @@ python3 backend/log_server.py 9090
 
 ---2
 #Дай Бог заработает!
+
+/home/pi/catkin_ws/src/clover/clover/src/qr_code_detector.cpp

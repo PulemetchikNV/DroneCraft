@@ -43,9 +43,9 @@ class HotDrone:
         self.initial_z = 0
         self.drone_name = os.environ.get('DRONE_NAME', 'unknown_drone')
         print(f"Running on drone: {self.drone_name}")
-
+        
         self.logger = setup_logging(self.drone_name)
-
+        
         # Threading control for async publisher
         self.publisher_thread = None
         self.stop_publisher = threading.Event()
@@ -87,7 +87,7 @@ class HotDrone:
                 self.logger.info("Arrived at target")
                 break
             self.wait(0.1)
-
+    
     def takeoff(self, z=1.1, delay: float = 0.5, time_spam: float = 2.5, time_warm: float = 2, time_up: float = 0.5) -> None:
         self.logger.info(f"Taking off to z={z:.2f}")
         self.set_led(effect='blink', r=255, g=255, b=255)
@@ -143,11 +143,21 @@ class HotDrone:
         rospy.sleep(duration)
         if rospy.is_shutdown():
             raise RuntimeError("rospy shutdown")
-
-    def scan_qr_code(self):
-        self.logger.info("QR: старт сканирования (заглушка)")
-        self.wait(1.0)
-        self.logger.info("QR: результат пока не реализован")
+            
+    
+    def scan_qr_code(self, timeout=5.0):
+        try:
+            msg = rospy.wait_for_message('qr_results', String, timeout=timeout)
+            data = (msg.data or '').strip()
+            if not data:
+                self.logger.info("QR: ничего не найдено")
+                return []
+            codes = [s.strip() for s in data.splitlines() if s.strip()]
+            self.logger.info(f"QR: найдены {codes}")
+            return codes
+        except rospy.ROSException:
+            self.logger.warning("QR: таймаут ожидания результата")
+            return []
 
     def _fake_pos_publisher(self, duration=5.0):
         self.logger.info(f"Started vision pose publishing for {duration}s")
