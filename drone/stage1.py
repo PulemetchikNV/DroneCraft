@@ -51,7 +51,13 @@ class Stage1:
 
             # 1) Одновременный взлёт (или локальный режим)
             self.sync.barrier_ready()
-            self.fc.takeoff(z=target_z, delay=4, time_spam=3.5, time_warm=2, time_up=1.5)
+            # Выбор параметров takeoff зависит от реализации
+            if hasattr(self.fc, 'takeoff'):
+                # Поддержка обеих реализаций: (z, delay, ...) или (z, delay, speed)
+                try:
+                    self.fc.takeoff(z=target_z, delay=4, time_spam=3.5, time_warm=2, time_up=1.5)
+                except TypeError:
+                    self.fc.takeoff(z=target_z, delay=4, speed=0.5)
 
             # 2) Достижение высоты
             self.sync.barrier_reached()
@@ -60,13 +66,16 @@ class Stage1:
             self.fc.set_led(effect='blink', r=0, g=0, b=255)
             self.logger.info("LED: индикация по достижению позиций")
 
-            # 4) Сканирование QR (заглушка/или реальные топики)
-            self.fc.scan_qr_code()
+            # 4) Сканирование QR (если требуется)
+            # self.fc.scan_qr_code()
 
             # 5) Посадка (опционально)
             if land_after:
                 self.sync.barrier_land()
-                self.fc.land(prl_aruco="aruco_map", prl_bias_x=-0.05, prl_bias_y=0.0, prl_z=0.6, prl_speed=0.2, prl_tol=0.07, fall_time=1.5, fall_speed=1.1, fall_z=-1.2)
+                try:
+                    self.fc.land(prl_aruco="aruco_map", prl_bias_x=-0.05, prl_bias_y=0.0, prl_z=0.6, prl_speed=0.2, prl_tol=0.07, fall_time=1.5, fall_speed=1.1, fall_z=-1.2)
+                except TypeError:
+                    self.fc.land()
 
             self.logger.info("Stage1 завершен")
         finally:

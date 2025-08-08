@@ -13,8 +13,21 @@ from std_msgs.msg import String
 
 from .helpers import setup_logging
 
+def scan_qr(logger: logging.Logger, timeout: float = 5.0) -> list[str]:
+    try:
+        msg = rospy.wait_for_message('qr_results', String, timeout=timeout)
+        data = (msg.data or '').strip()
+        if not data:
+            logger.info("QR: ничего не найдено")
+            return []
+        codes = [s.strip() for s in data.splitlines() if s.strip()]
+        logger.info(f"QR: найдены {codes}")
+        return codes
+    except rospy.ROSException:
+        logger.warning("QR: таймаут ожидания результата")
+        return []
 
-class FlightController:
+class FlightControllerCustom:
     def __init__(self, drone_name: str | None = None, logger: logging.Logger | None = None) -> None:
         self.autoland = rospy.ServiceProxy("land", Trigger)
         self.navigate = rospy.ServiceProxy('navigate', srv.Navigate)
@@ -116,18 +129,7 @@ class FlightController:
 
     # --- QR ---
     def scan_qr_code(self, timeout: float = 5.0) -> list[str]:
-        try:
-            msg = rospy.wait_for_message('qr_results', String, timeout=timeout)
-            data = (msg.data or '').strip()
-            if not data:
-                self.logger.info("QR: ничего не найдено")
-                return []
-            codes = [s.strip() for s in data.splitlines() if s.strip()]
-            self.logger.info(f"QR: найдены {codes}")
-            return codes
-        except rospy.ROSException:
-            self.logger.warning("QR: таймаут ожидания результата")
-            return []
+        return scan_qr(self.logger, timeout)
 
     # --- Vision pose spoofing ---
     def _fake_pos_publisher(self, duration=5.0):
@@ -171,6 +173,8 @@ class FlightController:
     def stop_fake_pos_async(self):
         if self.publisher_thread is not None and self.publisher_thread.is_alive():
             self.stop_publisher.set()
+        
+        if self.publisher_thread is not None:
             self.publisher_thread.join(timeout=1.0)
             self.logger.info("Stopped async fake position publisher")
 
@@ -179,4 +183,82 @@ class FlightController:
 
     def emergency_land(self) -> None:
         self.stop_fake_pos_async()
-        self.land() 
+        self.land()
+
+
+class FlightControllerMain:
+    """Реализация на стандартных сервисах Clover без фейковой publish-поддержки."""
+    def __init__(self, drone_name: str | None = None, logger: logging.Logger | None = None) -> None:
+        self.autoland = rospy.ServiceProxy("land", Trigger)
+        self.navigate = rospy.ServiceProxy('navigate', srv.Navigate)
+        self.get_telemetry = rospy.ServiceProxy('get_telemetry', srv.GetTelemetry)
+        self.set_led = rospy.ServiceProxy('led/set_effect', srv.SetLEDEffect)
+        self.set_mode_service = rospy.ServiceProxy("/mavros/set_mode", SetMode)
+        self.force_arm = rospy.ServiceProxy('/mavros/cmd/arming', CommandBool)
+
+        self.drone_name = drone_name or os.environ.get('DRONE_NAME', 'unknown_drone')
+        self.logger = logger or setup_logging(self.drone_name)
+
+    def wait(self, duration: float):
+        rospy.sleep(duration)
+        if rospy.is_shutdown():
+            raise RuntimeError("rospy shutdown")
+
+    def navigate_wait(
+        self,
+        x: float = 0.0,
+        y: float = 0.0,
+        z: float = 0.0,
+        yaw: float = float("nan"),
+        speed: float = 0.5,
+        frame_id: str = "",
+        auto_arm: bool = False,
+        tolerance: float = 0.2,
+    ) -> None:
+        self.logger.info(f"Navigating to x={x:.2f} y={y:.2f} z={z:.2f} in {frame_id}")
+        self.navigate(x=x, y=y, z=z, yaw=yaw, speed=speed, frame_id=frame_id, auto_arm=auto_arm)
+
+        telem = self.get_telemetry(frame_id="body")
+        if auto_arm and not telem.armed:
+            raise RuntimeError("Arming failed!")
+
+        while True:
+            telem = self.get_telemetry(frame_id="navigate_target")
+            if math.sqrt(telem.x**2 + telem.y**2 + telem.z**2) < tolerance:
+                self.wait(0.1)
+                self.logger.info("Arrived at target")
+                break
+            self.wait(0.1)
+
+    def takeoff(self, z=1.1, delay: float = 0.5, speed: float = 0.5) -> None:
+        self.logger.info(f"Taking off to z={z:.2f}")
+        self.set_led(effect='blink', r=255, g=255, b=255)
+        # Взлёт стандартным navigate с автоармингом
+        self.navigate(z=z, speed=speed, frame_id="body", auto_arm=True)
+        # Подождать стабилизацию
+        self.wait(max(delay, 0.5))
+        self.logger.info("Takeoff done")
+        self.set_led(r=0, g=255, b=0)
+
+    def land(self) -> None:
+        self.logger.info("Landing (standard)")
+        try:
+            self.autoland()
+        except Exception as e:
+            self.logger.warning(f"autoland failed: {e}, trying mode switch")
+            try:
+                self.set_mode_service(custom_mode="AUTO.LAND")
+            except Exception:
+                pass
+        self.logger.info("Land requested")
+
+    def scan_qr_code(self, timeout: float = 5.0) -> list[str]:
+        return scan_qr(self.logger, timeout)
+
+
+# Выбор реализации по переменной окружения
+_impl = os.getenv('FLIGHT_IMPL', 'main').lower()
+if _impl == 'custom':
+    FlightController = FlightControllerCustom
+else:
+    FlightController = FlightControllerMain 
