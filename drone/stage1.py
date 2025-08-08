@@ -31,7 +31,7 @@ class NoopSync:
         self.logger.info("Sync: LAND_READY -> LAND_GO (локально)")
 
 
-class HotDrone:
+class Stage1:
     def __init__(self) -> None:
         self.autoland = rospy.ServiceProxy("land", Trigger)
         self.navigate = rospy.ServiceProxy('navigate', srv.Navigate)
@@ -162,7 +162,7 @@ class HotDrone:
     def _fake_pos_publisher(self, duration=5.0):
         self.logger.info(f"Started vision pose publishing for {duration}s")
         pub = rospy.Publisher('/mavros/vision_pose/pose', PoseStamped, queue_size=1)
-        rate = rospy.Rate(50)
+        rate = rospy.Ra1`te(50)
         start_time = time.time()
         target_z = self.initial_z + 20.0
         current_z_temp = 0
