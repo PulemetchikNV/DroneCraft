@@ -16,6 +16,21 @@ from helpers import setup_logging
 from sync import SyncCoordinator
 
 
+class NoopSync:
+    def __init__(self, logger: logging.Logger | None = None):
+        self.logger = logger or logging.getLogger("noop_sync")
+    def start(self):
+        self.logger.info("Sync: локальный режим (без UDP)")
+    def stop(self):
+        pass
+    def barrier_ready(self, timeout: float = 60.0):
+        self.logger.info("Sync: READY -> GO (локально)")
+    def barrier_reached(self, timeout: float = 60.0):
+        self.logger.info("Sync: REACHED -> ALL_REACHED (локально)")
+    def barrier_land(self, timeout: float = 60.0):
+        self.logger.info("Sync: LAND_READY -> LAND_GO (локально)")
+
+
 class HotDrone:
     def __init__(self) -> None:
         self.autoland = rospy.ServiceProxy("land", Trigger)
@@ -35,12 +50,16 @@ class HotDrone:
         self.publisher_thread = None
         self.stop_publisher = threading.Event()
 
-        # Sync setup
-        expected_names = None
-        if os.getenv('DRONE_IDS'):
-            expected_names = [x.strip() for x in os.getenv('DRONE_IDS').split(',') if x.strip()]
-        expected_total = int(os.getenv('DRONES_TOTAL', '1'))
-        self.sync = SyncCoordinator(self.drone_name, expected_names, expected_total, logger=self.logger)
+        # Sync setup (optional)
+        sync_enabled = os.getenv('SYNC_ENABLED', '0') == '1'
+        if sync_enabled:
+            expected_names = None
+            if os.getenv('DRONE_IDS'):
+                expected_names = [x.strip() for x in os.getenv('DRONE_IDS').split(',') if x.strip()]
+            expected_total = int(os.getenv('DRONES_TOTAL', '1'))
+            self.sync = SyncCoordinator(self.drone_name, expected_names, expected_total, logger=self.logger)
+        else:
+            self.sync = NoopSync(logger=self.logger)
         self.sync.start()
 
     def navigate_wait(
@@ -186,21 +205,21 @@ class HotDrone:
             target_z = float(os.getenv('TARGET_Z', '1.2'))
             land_after = os.getenv('LAND_AFTER', '1') == '1'
 
-            # 1) Одновременный взлёт – барьер READY/GO
+            # 1) Одновременный взлёт (или локальный режим)
             self.sync.barrier_ready()
             self.takeoff(z=target_z, delay=4, time_spam=3.5, time_warm=2, time_up=1.5)
 
-            # 2) Фиксация достижения высоты – барьер REACHED/ALL_REACHED
+            # 2) Достижение высоты
             self.sync.barrier_reached()
 
-            # 3) Световая индикация одновременно
+            # 3) Световая индикация
             self.set_led(effect='blink', r=0, g=0, b=255)
             self.logger.info("LED: индикация по достижению позиций")
 
             # 4) Сканирование QR (заглушка)
             self.scan_qr_code()
 
-            # 5) Одновременная посадка (опционально)
+            # 5) Посадка (опционально)
             if land_after:
                 self.sync.barrier_land()
                 self.land(prl_aruco="aruco_map", prl_bias_x=-0.05, prl_bias_y=0.0, prl_z=0.6, prl_speed=0.2, prl_tol=0.07, fall_time=1.5, fall_speed=1.1, fall_z=-1.2)
