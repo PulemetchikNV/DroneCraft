@@ -11,7 +11,11 @@ from mavros_msgs.srv import CommandBool, SetMode
 from geometry_msgs.msg import PoseStamped
 from std_msgs.msg import String
 
-from .helpers import setup_logging
+try:
+    from .helpers import setup_logging
+except ImportError:
+    from helpers import setup_logging
+
 
 def scan_qr(logger: logging.Logger, timeout: float = 5.0) -> list[str]:
     try:
@@ -26,6 +30,7 @@ def scan_qr(logger: logging.Logger, timeout: float = 5.0) -> list[str]:
     except rospy.ROSException:
         logger.warning("QR: таймаут ожидания результата")
         return []
+
 
 class FlightControllerCustom:
     def __init__(self, drone_name: str | None = None, logger: logging.Logger | None = None) -> None:

@@ -3,9 +3,14 @@ import logging
 
 import rospy
 
-from helpers import setup_logging
-from sync import SyncCoordinator
-from flight import FlightController
+try:
+    from .helpers import setup_logging
+    from .sync import SyncCoordinator
+    from .flight import FlightController
+except ImportError:
+    from helpers import setup_logging
+    from sync import SyncCoordinator
+    from flight import FlightController
 
 
 class NoopSync:

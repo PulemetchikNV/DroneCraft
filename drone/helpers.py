@@ -1,5 +1,9 @@
 import logging
-from .log_handler import UDPLogHandler
+
+try:
+    from .log_handler import UDPLogHandler
+except ImportError:
+    from log_handler import UDPLogHandler
 
 
 def setup_logging(drone_name, log_level=logging.INFO):
