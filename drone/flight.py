@@ -3,14 +3,59 @@ import time
 import threading
 import os
 import logging
-from typing import Optional, List
 
-import rospy
-from clover import srv
-from std_srvs.srv import Trigger
-from mavros_msgs.srv import CommandBool, SetMode
-from geometry_msgs.msg import PoseStamped
-from std_msgs.msg import String
+# rospy and ROS services fallback for local testing
+try:
+    import rospy
+    from clover import srv
+    from std_srvs.srv import Trigger
+    from mavros_msgs.srv import CommandBool, SetMode
+    from geometry_msgs.msg import PoseStamped
+    from std_msgs.msg import String
+except ImportError:
+    # Mock classes for local testing
+    class MockRospy:
+        def is_shutdown(self):
+            return False
+        def wait_for_message(self, topic, msg_type, timeout=None):
+            return MockMsg()
+        def ServiceProxy(self, service_name, service_type):
+            return lambda **kwargs: MockResponse()
+        def Publisher(self, topic, msg_type, queue_size=1):
+            return MockPublisher()
+        def Subscriber(self, topic, msg_type, callback):
+            return MockSubscriber()
+        def sleep(self, duration):
+            import time
+            time.sleep(duration)
+    
+    class MockMsg:
+        def __init__(self):
+            self.data = ""
+    
+    class MockResponse:
+        def __init__(self):
+            self.success = True
+    
+    class MockPublisher:
+        def publish(self, msg):
+            pass
+    
+    class MockSubscriber:
+        pass
+    
+    # Mock modules
+    rospy = MockRospy()
+    srv = type('srv', (), {
+        'Navigate': type('Navigate', (), {}),
+        'GetTelemetry': type('GetTelemetry', (), {}),
+        'SetLEDEffect': type('SetLEDEffect', (), {})
+    })()
+    Trigger = type('Trigger', (), {})
+    CommandBool = type('CommandBool', (), {})
+    SetMode = type('SetMode', (), {})
+    PoseStamped = type('PoseStamped', (), {})
+    String = type('String', (), {'data': ''})
 
 try:
     from .helpers import setup_logging

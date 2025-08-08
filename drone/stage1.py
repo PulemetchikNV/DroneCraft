@@ -1,7 +1,17 @@
 import os
 import logging
 
-import rospy
+# rospy fallback for local testing
+try:
+    import rospy
+except ImportError:
+    # Mock rospy for local testing
+    class MockRospy:
+        def is_shutdown(self):
+            return False
+        def init_node(self, name):
+            pass
+    rospy = MockRospy()
 
 try:
     from .helpers import setup_logging
@@ -28,7 +38,7 @@ class NoopSync:
         self.logger.info("Sync: LAND_READY -> LAND_GO (локально)")
 
 
-class Stage1:
+class HotDrone:
     def __init__(self):
         self.drone_name = os.environ.get('DRONE_NAME', 'unknown_drone')
         print(f"Running on drone: {self.drone_name}")
@@ -88,3 +98,7 @@ class Stage1:
                 self.sync.stop()
             except Exception:
                 pass
+
+
+# Обратная совместимость
+Stage1 = HotDrone
