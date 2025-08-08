@@ -3,7 +3,6 @@ import time
 import socket
 import threading
 import logging
-from typing import Optional, List, Set
 
 
 class SyncCoordinator:
@@ -11,22 +10,22 @@ class SyncCoordinator:
 
     def __init__(
         self,
-        drone_name: str,
-        expected_names: Optional[List[str]] = None,
-        expected_total: Optional[int] = None,
-        logger: Optional[logging.Logger] = None,
-    ) -> None:
+        drone_name,
+        expected_names=None,
+        expected_total=None,
+        logger=None,
+    ):
         self.drone_name = drone_name
         self.logger = logger or logging.getLogger(drone_name)
-        self.expected_names: Optional[Set[str]] = set(expected_names) if expected_names else None
+        self.expected_names = set(expected_names) if expected_names else None
         self.expected_total = expected_total or (len(self.expected_names) if self.expected_names else 1)
 
         self.port = int(os.getenv('SYNC_PORT', '10001'))
         self.broadcast_ip = os.getenv('SYNC_BROADCAST', '255.255.255.255')
 
-        self.ready: Set[str] = set()
-        self.reached: Set[str] = set()
-        self.land_ready: Set[str] = set()
+        self.ready = set()
+        self.reached = set()
+        self.land_ready = set()
 
         self.go_event = threading.Event()
         self.all_reached_event = threading.Event()
@@ -37,7 +36,7 @@ class SyncCoordinator:
         self._land_go_sent = False
 
         self._stop = threading.Event()
-        self._listener: Optional[threading.Thread] = None
+        self._listener = None
 
         # RX socket
         self.rx_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -48,7 +47,7 @@ class SyncCoordinator:
         self.tx_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.tx_sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-    def start(self) -> None:
+    def start(self):
         if self._listener and self._listener.is_alive():
             return
         self._stop.clear()
@@ -56,7 +55,7 @@ class SyncCoordinator:
         self._listener.start()
         self.logger.info(f"Sync: слушаю UDP {self.port}, broadcast {self.broadcast_ip}")
 
-    def stop(self) -> None:
+    def stop(self):
         self._stop.set()
         try:
             self.rx_sock.close()
@@ -68,25 +67,25 @@ class SyncCoordinator:
             pass
 
     # -- barriers --
-    def barrier_ready(self, timeout: float = 60.0) -> None:
+    def barrier_ready(self, timeout=60.0):
         self.send(f"READY|{self.drone_name}")
         self.logger.info("Sync: READY отправлен, жду GO…")
         self._wait_with_retx(self.go_event, retx_msg=f"READY|{self.drone_name}", timeout=timeout)
         self.logger.info("Sync: получен GO")
 
-    def barrier_reached(self, timeout: float = 60.0) -> None:
+    def barrier_reached(self, timeout=60.0):
         self.send(f"REACHED|{self.drone_name}")
         self.logger.info("Sync: REACHED отправлен, жду ALL_REACHED…")
         self._wait_with_retx(self.all_reached_event, retx_msg=f"REACHED|{self.drone_name}", timeout=timeout)
         self.logger.info("Sync: получен ALL_REACHED")
 
-    def barrier_land(self, timeout: float = 60.0) -> None:
+    def barrier_land(self, timeout=60.0):
         self.send(f"LAND_READY|{self.drone_name}")
         self.logger.info("Sync: LAND_READY отправлен, жду LAND_GO…")
         self._wait_with_retx(self.land_go_event, retx_msg=f"LAND_READY|{self.drone_name}", timeout=timeout)
         self.logger.info("Sync: получен LAND_GO")
 
-    def _wait_with_retx(self, event: threading.Event, retx_msg: str, timeout: float) -> None:
+    def _wait_with_retx(self, event, retx_msg, timeout):
         start = time.time()
         while not event.is_set():
             if time.time() - start > timeout:
@@ -94,7 +93,7 @@ class SyncCoordinator:
             self.send(retx_msg)
             time.sleep(1.0)
 
-    def _rx_loop(self) -> None:
+    def _rx_loop(self):
         while not self._stop.is_set():
             try:
                 self.rx_sock.settimeout(1.0)
@@ -125,10 +124,10 @@ class SyncCoordinator:
             except Exception as e:
                 self.logger.warning(f"Sync RX ошибка: {e}")
 
-    def _threshold(self) -> int:
+    def _threshold(self):
         return len(self.expected_names) if self.expected_names else int(self.expected_total or 1)
 
-    def _maybe_broadcast_go(self) -> None:
+    def _maybe_broadcast_go(self):
         if self._go_sent:
             return
         if self._have_all(self.ready):
@@ -137,7 +136,7 @@ class SyncCoordinator:
             self.go_event.set()
             self.logger.info("Sync: отправил GO")
 
-    def _maybe_broadcast_all_reached(self) -> None:
+    def _maybe_broadcast_all_reached(self):
         if self._all_reached_sent:
             return
         if self._have_all(self.reached):
@@ -146,7 +145,7 @@ class SyncCoordinator:
             self.all_reached_event.set()
             self.logger.info("Sync: отправил ALL_REACHED")
 
-    def _maybe_broadcast_land_go(self) -> None:
+    def _maybe_broadcast_land_go(self):
         if self._land_go_sent:
             return
         if self._have_all(self.land_ready):
@@ -155,12 +154,12 @@ class SyncCoordinator:
             self.land_go_event.set()
             self.logger.info("Sync: отправил LAND_GO")
 
-    def _have_all(self, got: Set[str]) -> bool:
+    def _have_all(self, got):
         if self.expected_names:
             return len(set(self.expected_names) - got) == 0
         return len(got) >= self._threshold()
 
-    def send(self, msg: str) -> None:
+    def send(self, msg):
         try:
             self.tx_sock.sendto(msg.encode('utf-8'), (self.broadcast_ip, self.port))
         except Exception as e:

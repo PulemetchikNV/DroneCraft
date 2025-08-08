@@ -3,6 +3,7 @@ import time
 import threading
 import os
 import logging
+from typing import Optional, List
 
 import rospy
 from clover import srv
@@ -17,7 +18,7 @@ except ImportError:
     from helpers import setup_logging
 
 
-def scan_qr(logger: logging.Logger, timeout: float = 5.0) -> list[str]:
+def scan_qr(logger, timeout=5.0):
     try:
         msg = rospy.wait_for_message('qr_results', String, timeout=timeout)
         data = (msg.data or '').strip()
@@ -33,7 +34,7 @@ def scan_qr(logger: logging.Logger, timeout: float = 5.0) -> list[str]:
 
 
 class FlightControllerCustom:
-    def __init__(self, drone_name: str | None = None, logger: logging.Logger | None = None) -> None:
+    def __init__(self, drone_name=None, logger=None):
         self.autoland = rospy.ServiceProxy("land", Trigger)
         self.navigate = rospy.ServiceProxy('navigate', srv.Navigate)
         self.get_telemetry = rospy.ServiceProxy('get_telemetry', srv.GetTelemetry)
@@ -46,21 +47,21 @@ class FlightControllerCustom:
         self.logger = logger or setup_logging(self.drone_name)
 
         # Threading control for async publisher
-        self.publisher_thread: threading.Thread | None = None
+        self.publisher_thread = None
         self.stop_publisher = threading.Event()
 
     # --- Core flight primitives ---
     def navigate_wait(
         self,
-        x: float = 0.0,
-        y: float = 0.0,
-        z: float = 0.0,
-        yaw: float = float("nan"),
-        speed: float = 0.5,
-        frame_id: str = "",
-        auto_arm: bool = False,
-        tolerance: float = 0.2,
-    ) -> None:
+        x=0.0,
+        y=0.0,
+        z=0.0,
+        yaw=float("nan"),
+        speed=0.5,
+        frame_id="",
+        auto_arm=False,
+        tolerance=0.2,
+    ):
         self.logger.info(f"Navigating to x={x:.2f} y={y:.2f} z={z:.2f} in {frame_id}")
         self.navigate(x=x, y=y, z=z, yaw=yaw, speed=speed, frame_id=frame_id, auto_arm=auto_arm)
 
@@ -76,7 +77,7 @@ class FlightControllerCustom:
                 break
             self.wait(0.1)
 
-    def takeoff(self, z=1.1, delay: float = 0.5, time_spam: float = 2.5, time_warm: float = 2, time_up: float = 0.5) -> None:
+    def takeoff(self, z=1.1, delay=0.5, time_spam=2.5, time_warm=2, time_up=0.5):
         self.logger.info(f"Taking off to z={z:.2f}")
         self.set_led(effect='blink', r=255, g=255, b=255)
 
@@ -97,7 +98,7 @@ class FlightControllerCustom:
         self.set_led(r=0, g=255, b=0)
         self.stop_fake_pos_async()
 
-    def land(self, prl_aruco: str = "aruco_map", prl_speed=0.5, prl_bias_x = -0.08, prl_bias_y=0.1, prl_z=0.6, prl_tol=0.1, delay: float = 4.0, fall_time=1, fall_z=-1, fall_speed=1) -> None:
+    def land(self, prl_aruco="aruco_map", prl_speed=0.5, prl_bias_x=-0.08, prl_bias_y=0.1, prl_z=0.6, prl_tol=0.1, delay=4.0, fall_time=1, fall_z=-1, fall_speed=1):
         telem = self.get_telemetry(frame_id="aruco_map")
         self.logger.info("Pre-landing")
         self.set_led(effect='blink', r=255, g=255, b=255)
@@ -127,13 +128,13 @@ class FlightControllerCustom:
             self.wait(3)
         self.set_led(r=0, g=255, b=0)
 
-    def wait(self, duration: float):
+    def wait(self, duration):
         rospy.sleep(duration)
         if rospy.is_shutdown():
             raise RuntimeError("rospy shutdown")
 
     # --- QR ---
-    def scan_qr_code(self, timeout: float = 5.0) -> list[str]:
+    def scan_qr_code(self, timeout=5.0):
         return scan_qr(self.logger, timeout)
 
     # --- Vision pose spoofing ---
@@ -186,14 +187,14 @@ class FlightControllerCustom:
     def send_fake_pos(self, duration=5.0):
         self._fake_pos_publisher(duration)
 
-    def emergency_land(self) -> None:
+    def emergency_land(self):
         self.stop_fake_pos_async()
         self.land()
 
 
 class FlightControllerMain:
     """Реализация на стандартных сервисах Clover без фейковой publish-поддержки."""
-    def __init__(self, drone_name: str | None = None, logger: logging.Logger | None = None) -> None:
+    def __init__(self, drone_name=None, logger=None):
         self.autoland = rospy.ServiceProxy("land", Trigger)
         self.navigate = rospy.ServiceProxy('navigate', srv.Navigate)
         self.get_telemetry = rospy.ServiceProxy('get_telemetry', srv.GetTelemetry)
@@ -204,22 +205,22 @@ class FlightControllerMain:
         self.drone_name = drone_name or os.environ.get('DRONE_NAME', 'unknown_drone')
         self.logger = logger or setup_logging(self.drone_name)
 
-    def wait(self, duration: float):
+    def wait(self, duration):
         rospy.sleep(duration)
         if rospy.is_shutdown():
             raise RuntimeError("rospy shutdown")
 
     def navigate_wait(
         self,
-        x: float = 0.0,
-        y: float = 0.0,
-        z: float = 0.0,
-        yaw: float = float("nan"),
-        speed: float = 0.5,
-        frame_id: str = "",
-        auto_arm: bool = False,
-        tolerance: float = 0.2,
-    ) -> None:
+        x=0.0,
+        y=0.0,
+        z=0.0,
+        yaw=float("nan"),
+        speed=0.5,
+        frame_id="",
+        auto_arm=False,
+        tolerance=0.2,
+    ):
         self.logger.info(f"Navigating to x={x:.2f} y={y:.2f} z={z:.2f} in {frame_id}")
         self.navigate(x=x, y=y, z=z, yaw=yaw, speed=speed, frame_id=frame_id, auto_arm=auto_arm)
 
@@ -235,7 +236,7 @@ class FlightControllerMain:
                 break
             self.wait(0.1)
 
-    def takeoff(self, z=1.1, delay: float = 0.5, speed: float = 0.5) -> None:
+    def takeoff(self, z=1.1, delay=0.5, speed=0.5):
         self.logger.info(f"Taking off to z={z:.2f}")
         self.set_led(effect='blink', r=255, g=255, b=255)
         # Взлёт стандартным navigate с автоармингом
@@ -245,7 +246,7 @@ class FlightControllerMain:
         self.logger.info("Takeoff done")
         self.set_led(r=0, g=255, b=0)
 
-    def land(self) -> None:
+    def land(self):
         self.logger.info("Landing (standard)")
         try:
             self.autoland()
@@ -257,7 +258,7 @@ class FlightControllerMain:
                 pass
         self.logger.info("Land requested")
 
-    def scan_qr_code(self, timeout: float = 5.0) -> list[str]:
+    def scan_qr_code(self, timeout=5.0):
         return scan_qr(self.logger, timeout)
 
 

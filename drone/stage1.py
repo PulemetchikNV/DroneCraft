@@ -14,22 +14,22 @@ except ImportError:
 
 
 class NoopSync:
-    def __init__(self, logger: logging.Logger | None = None):
+    def __init__(self, logger=None):
         self.logger = logger or logging.getLogger("noop_sync")
     def start(self):
         self.logger.info("Sync: локальный режим (без UDP)")
     def stop(self):
         pass
-    def barrier_ready(self, timeout: float = 60.0):
+    def barrier_ready(self, timeout=60.0):
         self.logger.info("Sync: READY -> GO (локально)")
-    def barrier_reached(self, timeout: float = 60.0):
+    def barrier_reached(self, timeout=60.0):
         self.logger.info("Sync: REACHED -> ALL_REACHED (локально)")
-    def barrier_land(self, timeout: float = 60.0):
+    def barrier_land(self, timeout=60.0):
         self.logger.info("Sync: LAND_READY -> LAND_GO (локально)")
 
 
 class Stage1:
-    def __init__(self) -> None:
+    def __init__(self):
         self.drone_name = os.environ.get('DRONE_NAME', 'unknown_drone')
         print(f"Running on drone: {self.drone_name}")
         self.logger = setup_logging(self.drone_name)
@@ -49,7 +49,7 @@ class Stage1:
             self.sync = NoopSync(logger=self.logger)
         self.sync.start()
 
-    def run(self) -> None:
+    def run(self):
         try:
             target_z = float(os.getenv('TARGET_Z', '1.2'))
             land_after = os.getenv('LAND_AFTER', '1') == '1'
