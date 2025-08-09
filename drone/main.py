@@ -1,5 +1,6 @@
 import sys
 import os
+import logging
 
 # Парсинг аргументов командной строки
 def parse_args():
@@ -32,7 +33,7 @@ except ImportError:
     # Mock rospy for local testing
     class MockRospy:
         def init_node(self, name):
-            print(f"Mock ROS node: {name}")
+            logging.warning(f"[MOCK] rospy.init_node('{name}')")
     rospy = MockRospy()
 
 rospy.init_node('stage1_mod_flight')

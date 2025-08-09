@@ -12,20 +12,32 @@ try:
     from mavros_msgs.srv import CommandBool, SetMode
     from geometry_msgs.msg import PoseStamped
     from std_msgs.msg import String
+    IS_MOCK_MODE = False
 except ImportError as e:
-    print(f"==ImportError: {e}")
-    # Mock classes for local testing
-    print("==Importing mock classes for local testing")
+    IS_MOCK_MODE = True
+    logging.warning("=" * 60)
+    logging.warning("!!! ROS (rospy) not found. Running in MOCK mode. !!!")
+    logging.warning(f"!!! Import error: {e}")
+    logging.warning("!!! All flight commands will be simulated.           !!!")
+    logging.warning("=" * 60)
+
     class MockRospy:
         def is_shutdown(self):
             return False
         def wait_for_message(self, topic, msg_type, timeout=None):
+            logging.warning(f"[MOCK] rospy.wait_for_message('{topic}') -> returning empty message")
             return MockMsg()
         def ServiceProxy(self, service_name, service_type):
-            return lambda **kwargs: MockResponse()
+            logging.warning(f"[MOCK] rospy.ServiceProxy('{service_name}') -> returning mock service")
+            def mock_service(**kwargs):
+                logging.info(f"[MOCK] Service '{service_name}' called with {kwargs}")
+                return MockResponse()
+            return mock_service
         def Publisher(self, topic, msg_type, queue_size=1):
-            return MockPublisher()
+            logging.warning(f"[MOCK] rospy.Publisher('{topic}') -> returning mock publisher")
+            return MockPublisher(topic)
         def Subscriber(self, topic, msg_type, callback):
+            logging.warning(f"[MOCK] rospy.Subscriber('{topic}') -> returning mock subscriber")
             return MockSubscriber()
         def sleep(self, duration):
             import time
@@ -38,10 +50,14 @@ except ImportError as e:
     class MockResponse:
         def __init__(self):
             self.success = True
+            self.armed = True # Simulate successful arming
+            self.mode_sent = True
     
     class MockPublisher:
+        def __init__(self, topic):
+            self.topic = topic
         def publish(self, msg):
-            pass
+            logging.info(f"[MOCK] Publishing to topic '{self.topic}': {msg}")
     
     class MockSubscriber:
         pass
