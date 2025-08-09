@@ -17,11 +17,12 @@ try:
     from .helpers import setup_logging
     from .sync import SyncCoordinator
     from .flight import FlightController
+    from .const import DRONE_LIST, LEADER_DRONE, DRONES_TOTAL
 except ImportError:
     from helpers import setup_logging
     from sync import SyncCoordinator
     from flight import FlightController
-
+    from const import DRONE_LIST, LEADER_DRONE, DRONES_TOTAL
 
 class NoopSync:
     def __init__(self, logger=None):
@@ -51,9 +52,9 @@ class HotDrone:
         sync_enabled = os.getenv('SYNC_ENABLED', '0') == '1'
         if sync_enabled:
             expected_names = None
-            if os.getenv('DRONE_IDS'):
-                expected_names = [x.strip() for x in os.getenv('DRONE_IDS').split(',') if x.strip()]
-            expected_total = int(os.getenv('DRONES_TOTAL', '1'))
+            if DRONE_LIST:
+                expected_names = [x.strip() for x in DRONE_LIST.split(',') if x.strip()]
+            expected_total = DRONES_TOTAL
             self.sync = SyncCoordinator(self.drone_name, expected_names, expected_total, logger=self.logger)
         else:
             self.sync = NoopSync(logger=self.logger)

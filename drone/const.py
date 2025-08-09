@@ -1,0 +1,3 @@
+DRONE_LIST = 'drone6,drone13'
+LEADER_DRONE = 'drone6'
+DRONES_TOTAL=2
