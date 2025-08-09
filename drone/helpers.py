@@ -21,7 +21,7 @@ def setup_logging(drone_name, log_level=logging.INFO):
     
     # UDP handler (idempotent)
     if not any(isinstance(h, UDPLogHandler) for h in logger.handlers):
-    udp_handler = UDPLogHandler(drone_name=drone_name)
-    logger.addHandler(udp_handler)
+        udp_handler = UDPLogHandler(drone_name=drone_name)
+        logger.addHandler(udp_handler)
     
     return logger
