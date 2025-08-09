@@ -4,6 +4,7 @@ import time
 import threading
 import logging
 import uuid
+import math
 
 # rospy fallback for local testing
 try:
@@ -160,35 +161,74 @@ class Stage1Mod:
 
         time.sleep(3)
         
-        # 2) Ожидание и сканирование QR кода
-        self.logger.info("Waiting for QR code...")
-        
-        scan_duration = 20.0
-        scan_start_time = time.time()
+        # 2) Fly search pattern and scan for QR code
+        self.logger.info("Starting QR code search pattern...")
+
+        # Waypoints form a rectangle slightly smaller than the one defined by markers 130-133
+        # in aruco_map_dronecraft_v2.txt, to be "near the corners".
+        waypoints = [
+            {'x': -1.2, 'y': -1.5, 'z': target_z, 'speed': 0.4},
+            {'x':  1.2, 'y': -1.5, 'z': target_z, 'speed': 0.4},
+            {'x':  1.2, 'y':  1.5, 'z': target_z, 'speed': 0.4},
+            {'x': -1.2, 'y':  1.5, 'z': target_z, 'speed': 0.4},
+            # Return to center for stability before the next phase
+            {'x':  0.0, 'y':  0.0, 'z': target_z, 'speed': 0.5},
+        ]
+
         qr_data = "NO_QR_DETECTED"
+        qr_found = False
+        arrival_tolerance = 0.3  # 30cm
 
-        self.logger.info(f"Scanning for QR code for {scan_duration:.1f} seconds...")
-        while time.time() - scan_start_time < scan_duration:
-            try:
-                # Use a short timeout for each individual check
-                qr_codes = self.fc.scan_qr_code(timeout=0.5)
-                if qr_codes:
-                    qr_data = qr_codes[0]
-                    self.logger.info(f"QR CODE DETECTED: {qr_data}")
-                    break 
-            except Exception as e:
-                self.logger.error(f"QR scan failed during polling: {e}")
-                qr_data = "QR_SCAN_ERROR"
-                break
-            
-            if rospy.is_shutdown():
-                self.logger.warning("ROS shutdown requested, stopping QR scan.")
+        for i, waypoint in enumerate(waypoints):
+            if qr_found:
                 break
 
+            self.logger.info(f"Navigating to waypoint {i+1}/{len(waypoints)}: {waypoint}")
+            self.fc.navigate(x=waypoint['x'], y=waypoint['y'], z=waypoint['z'], speed=waypoint['speed'], frame_id="aruco_map", auto_arm=False)
             time.sleep(0.5)
 
-        if qr_data == "NO_QR_DETECTED":
-            self.logger.warning("No QR code detected after scan period, continuing...")
+            # While navigating to the waypoint, scan for QR code
+            while not rospy.is_shutdown():
+                # 1. Check for QR code
+                try:
+                    scan_codes = self.fc.scan_qr_code(timeout=0.1)
+                    if scan_codes:
+                        qr_data = scan_codes[0]
+                        self.logger.info(f"QR CODE DETECTED: {qr_data}")
+                        qr_found = True
+                        break 
+                except Exception as e:
+                    self.logger.error(f"QR scan failed during polling: {e}")
+                    qr_data = "QR_SCAN_ERROR"
+                    qr_found = True
+                    break
+
+                # 2. Check for arrival at the waypoint
+                try:
+                    telem = self.fc.get_telemetry(frame_id="navigate_target")
+                    distance_to_target = math.sqrt(telem.x**2 + telem.y**2 + telem.z**2)
+                    if distance_to_target < arrival_tolerance:
+                        self.logger.info(f"Arrived at waypoint {i+1}")
+                        break
+                except Exception as e:
+                    self.logger.warning(f"Could not get navigate_target telemetry: {e}. Fallback to simple wait.")
+                    time.sleep(3)
+                    break
+                
+                time.sleep(0.2)
+
+        # After the search, ensure the drone is stationary
+        if qr_found:
+            self.logger.info("QR code found, hovering at current position.")
+        else:
+            self.logger.warning("No QR code detected during search pattern, hovering.")
+
+        try:
+            telem_map = self.fc.get_telemetry(frame_id="aruco_map")
+            self.fc.navigate(x=telem_map.x, y=telem_map.y, z=telem_map.z, speed=0.1, frame_id="aruco_map")
+            time.sleep(1)
+        except Exception as e:
+            self.logger.error(f"Failed to get telemetry to hover: {e}.")
         
         # 3) Команда взлета всем дронам
         self.logger.info("Sending TAKEOFF command to all drones")
