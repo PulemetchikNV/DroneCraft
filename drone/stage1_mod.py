@@ -110,7 +110,7 @@ class Stage1Mod:
         # 2) Ожидание и сканирование QR кода
         self.logger.info("Waiting for QR code...")
         
-        scan_duration = 10.0
+        scan_duration = 20.0
         scan_start_time = time.time()
         qr_data = "NO_QR_DETECTED"
 
