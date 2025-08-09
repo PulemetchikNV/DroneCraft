@@ -12,8 +12,10 @@ try:
     from mavros_msgs.srv import CommandBool, SetMode
     from geometry_msgs.msg import PoseStamped
     from std_msgs.msg import String
-except ImportError:
+except ImportError as e:
+    print(f"==ImportError: {e}")
     # Mock classes for local testing
+    print("==Importing mock classes for local testing")
     class MockRospy:
         def is_shutdown(self):
             return False
