@@ -12,17 +12,16 @@
 - `scripts/update_drones.sh` - Обновление кода на всех дронах (git pull)
 - `scripts/run_drones.sh` - Запуск скриптов на всех дронах
 - `scripts/stop_drones.sh` - Остановка всех процессов Python
+- `scripts/deploy_aruco_map.sh` - Развертывание ArUco карт на всех дронах
+- `scripts/restart_clover.sh` - Перезапуск сервиса clover на всех дронах
 
 ## Настройка
 
 ### 1. Конфигурация дронов
 
-Отредактируйте `drones.txt`:
+Отредактируйте `drones.txt` (все в одной строке, разделитель между дронами - точка с запятой):
 ```
-drone6:10.135.42.35
-drone13:10.135.42.36
-drone14:10.135.42.37
-drone15:10.135.42.38
+drone6:10.135.42.35;drone13:10.135.42.36;drone14:10.135.42.37;drone15:10.135.42.38
 ```
 
 ### 2. SSH настройки
@@ -88,6 +87,29 @@ sudo apt-get install sshpass
 
 Останавливает все Python процессы на дронах.
 
+### Управление ArUco картами
+```bash
+# Развертывание ArUco карт
+./scripts/deploy_aruco_map.sh
+```
+
+Интерактивный выбор и развертывание ArUco карт:
+- **Выбор карты**: DroneCraft v1 или v2
+- **Автобэкап**: создает резервную копию текущей карты
+- **Проверка**: верифицирует успешное развертывание
+- **Целевой путь**: `~/catkin_ws/src/clover/aruco_pose/map/small_map.txt`
+
+### Перезапуск сервиса Clover
+```bash
+# Перезапуск clover на всех дронах
+./scripts/restart_clover.sh
+```
+
+Безопасный перезапуск сервиса clover:
+- **Остановка** → **Запуск** → **Проверка статуса**
+- Применяет изменения ArUco карт
+- Показывает статус сервиса после перезапуска
+
 ## Поддержка аргументов командной строки
 
 Все main скрипты поддерживают:
@@ -135,9 +157,15 @@ python3 ./drone/log_server.py
 ```bash
 # Полный цикл разработки
 ./scripts/update_drones.sh              # Обновить код
+./scripts/deploy_aruco_map.sh           # Развернуть ArUco карту
+./scripts/restart_clover.sh             # Перезапустить clover
 ./scripts/run_drones.sh main_stage1_mod.py  # Запустить Stage1 Mod
 # ... дождаться выполнения ...
 ./scripts/stop_drones.sh                # Остановить процессы
+
+# Быстрая смена ArUco карты
+./scripts/deploy_aruco_map.sh           # Выбрать и развернуть карту
+./scripts/restart_clover.sh             # Применить изменения
 
 # Быстрый запуск одного скрипта
 ./scripts/run_drones.sh main.py

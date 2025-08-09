@@ -61,9 +61,19 @@ stop_on_drone() {
 }
 
 # Читаем файл и останавливаем процессы на каждом дроне
-while IFS=':' read -r drone_name drone_ip; do
-    # Пропускаем пустые строки и комментарии
-    if [[ -z "$drone_name" || "$drone_name" =~ ^[[:space:]]*# ]]; then
+# Читаем содержимое файла в переменную
+DRONES_DATA=$(cat "$DRONES_FILE")
+
+# Разбиваем строку по точке с запятой
+IFS=';' read -ra DRONE_ENTRIES <<< "$DRONES_DATA"
+
+# Обрабатываем каждую запись
+for entry in "${DRONE_ENTRIES[@]}"; do
+    # Разбиваем запись на имя и IP по двоеточию
+    IFS=':' read -r drone_name drone_ip <<< "$entry"
+    
+    # Пропускаем пустые строки
+    if [[ -z "$drone_name" || -z "$drone_ip" ]]; then
         continue
     fi
     
@@ -72,7 +82,6 @@ while IFS=':' read -r drone_name drone_ip; do
     drone_ip=$(echo "$drone_ip" | xargs)
     
     stop_on_drone "$drone_name" "$drone_ip"
-    
-done < "$DRONES_FILE"
+done
 
 echo -e "${GREEN}=== Stop process completed ===${NC}" 

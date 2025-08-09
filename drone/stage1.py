@@ -8,7 +8,7 @@ except ImportError:
     # Mock rospy for local testing
     class MockRospy:
         def is_shutdown(self):
-            return False
+        return False
         def init_node(self, name):
             pass
     rospy = MockRospy()
@@ -74,6 +74,9 @@ class HotDrone:
                     self.fc.takeoff(z=target_z, delay=4, time_spam=3.5, time_warm=2, time_up=1.5)
                 except TypeError:
                     self.fc.takeoff(z=target_z, delay=4, speed=0.5)
+            
+            if(self.drone_name === 'drone6'):
+                self.fc.navigate_wait
 
             # 2) Достижение высоты
             self.sync.barrier_reached()

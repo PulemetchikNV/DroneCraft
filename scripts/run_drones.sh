@@ -176,10 +176,20 @@ choice=${choice:-1}
 
 if [ "$choice" = "2" ]; then
     echo -e "${BLUE}Running in sequential mode...${NC}"
-    # Читаем файл и запускаем каждый дрон по очереди
-    while IFS=':' read -r drone_name drone_ip; do
-        # Пропускаем пустые строки и комментарии
-        if [[ -z "$drone_name" || "$drone_name" =~ ^[[:space:]]*# ]]; then
+    
+    # Читаем содержимое файла в переменную
+    DRONES_DATA=$(cat "$DRONES_FILE")
+    
+    # Разбиваем строку по точке с запятой
+    IFS=';' read -ra DRONE_ENTRIES <<< "$DRONES_DATA"
+    
+    # Обрабатываем каждую запись
+    for entry in "${DRONE_ENTRIES[@]}"; do
+        # Разбиваем запись на имя и IP по двоеточию
+        IFS=':' read -r drone_name drone_ip <<< "$entry"
+        
+        # Пропускаем пустые строки
+        if [[ -z "$drone_name" || -z "$drone_ip" ]]; then
             continue
         fi
         
@@ -188,14 +198,23 @@ if [ "$choice" = "2" ]; then
         drone_ip=$(echo "$drone_ip" | xargs)
         
         run_on_drone_sync "$drone_name" "$drone_ip"
-        
-    done < "$DRONES_FILE"
+    done
 else
     echo -e "${BLUE}Running in parallel mode...${NC}"
-    # Читаем файл и запускаем каждый дрон в фоне
-    while IFS=':' read -r drone_name drone_ip; do
-        # Пропускаем пустые строки и комментарии
-        if [[ -z "$drone_name" || "$drone_name" =~ ^[[:space:]]*# ]]; then
+    
+    # Читаем содержимое файла в переменную
+    DRONES_DATA=$(cat "$DRONES_FILE")
+    
+    # Разбиваем строку по точке с запятой
+    IFS=';' read -ra DRONE_ENTRIES <<< "$DRONES_DATA"
+    
+    # Обрабатываем каждую запись
+    for entry in "${DRONE_ENTRIES[@]}"; do
+        # Разбиваем запись на имя и IP по двоеточию
+        IFS=':' read -r drone_name drone_ip <<< "$entry"
+        
+        # Пропускаем пустые строки
+        if [[ -z "$drone_name" || -z "$drone_ip" ]]; then
             continue
         fi
         
@@ -204,8 +223,7 @@ else
         drone_ip=$(echo "$drone_ip" | xargs)
         
         run_on_drone "$drone_name" "$drone_ip"
-        
-    done < "$DRONES_FILE"
+    done
     
     echo -e "${GREEN}All drones started. Press Ctrl+C to stop all processes.${NC}"
     echo -e "${YELLOW}Waiting for all background processes to complete...${NC}"
