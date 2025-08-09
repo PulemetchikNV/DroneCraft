@@ -96,7 +96,7 @@ class Stage1Mod:
         self.logger.info("Starting leader sequence")
         
         # 1) Взлет лидера на 3 метра
-        target_z = 3.0
+        target_z = 1.0
         self.logger.info(f"Leader takeoff to {target_z}m")
         
         # Выбор метода takeoff в зависимости от реализации
