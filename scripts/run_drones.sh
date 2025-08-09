@@ -22,16 +22,69 @@ NC='\033[0m' # No Color
 # Определяем какой скрипт запускать
 SCRIPT_NAME=${1:-"main.py"}
 PYTHON_CMD="python3"
+LOG_SERVER_PID=""
 
 echo -e "${GREEN}=== Drone Run Script ===${NC}"
 echo "Script to run: $SCRIPT_NAME"
 echo "Reading drones from: $DRONES_FILE"
+
+# Функция для запуска log server
+start_log_server() {
+    echo -e "${BLUE}Starting log server...${NC}"
+    
+    # Проверяем есть ли уже запущенный log server
+    if pgrep -f "log_server.py" > /dev/null; then
+        echo -e "${YELLOW}Log server already running${NC}"
+        return 0
+    fi
+    
+    # Запускаем log server в фоне
+    if [ -f "./drone/log_server.py" ]; then
+        $PYTHON_CMD ./drone/log_server.py &
+        LOG_SERVER_PID=$!
+        sleep 1
+        
+        # Проверяем что запустился
+        if kill -0 $LOG_SERVER_PID 2>/dev/null; then
+            echo -e "${GREEN}✓ Log server started (PID: $LOG_SERVER_PID)${NC}"
+        else
+            echo -e "${RED}✗ Failed to start log server${NC}"
+            LOG_SERVER_PID=""
+        fi
+    else
+        echo -e "${YELLOW}Warning: log_server.py not found, continuing without log server${NC}"
+    fi
+    echo ""
+}
+
+# Функция для остановки log server
+stop_log_server() {
+    if [ -n "$LOG_SERVER_PID" ] && kill -0 $LOG_SERVER_PID 2>/dev/null; then
+        echo -e "${BLUE}Stopping log server (PID: $LOG_SERVER_PID)...${NC}"
+        kill $LOG_SERVER_PID
+        sleep 1
+        echo -e "${GREEN}✓ Log server stopped${NC}"
+    fi
+}
+
+# Функция для обработки сигналов (Ctrl+C)
+cleanup() {
+    echo -e "\n${YELLOW}Received interrupt signal, cleaning up...${NC}"
+    stop_log_server
+    exit 0
+}
+
+# Устанавливаем обработчик сигналов
+trap cleanup SIGINT SIGTERM
 
 # Проверяем существование файла со списком дронов
 if [ ! -f "$DRONES_FILE" ]; then
     echo -e "${RED}Error: Drones file not found: $DRONES_FILE${NC}"
     exit 1
 fi
+
+# Запускаем log server
+start_log_server
 
 # Функция для запуска скрипта на дроне через SSH
 run_on_drone() {
@@ -160,6 +213,9 @@ else
 fi
 
 echo -e "${GREEN}=== Execution completed ===${NC}"
+
+# Останавливаем log server
+stop_log_server
 
 # Инструкция по установке sshpass если нужно
 if ! command -v sshpass &> /dev/null; then
