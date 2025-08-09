@@ -3,6 +3,7 @@ import json
 import time
 import threading
 import logging
+import uuid
 
 # rospy fallback for local testing
 try:
@@ -58,20 +59,47 @@ class Stage1Mod:
         self._takeoff_event = threading.Event()
         self._land_event = threading.Event()
         
+        # Ack handling
+        self._received_acks = set()
+        self._ack_lock = threading.Lock()
+
     def _on_custom_message(self, message):
-        """Обработчик сообщений от лидера"""
+        """Обработчик сообщений от лидера и подтверждений"""
         try:
             obj = json.loads(message)
         except Exception:
             return
             
         cmd_type = obj.get('type')
+
+        # --- Ack handling (for leader) ---
+        if cmd_type == 'ack':
+            if self.is_leader:
+                ack_id = obj.get('ack_id')
+                with self._ack_lock:
+                    self._received_acks.add(ack_id)
+            return
+
+        # --- Command handling (for followers) ---
         target = obj.get('to', '*')
         
         # Проверяем что команда для нас
         if target != '*' and target != self.drone_name:
             return
             
+        # Отправляем ack, если есть msg_id
+        if 'msg_id' in obj and not self.is_leader and self.swarm:
+            ack_payload = {
+                'type': 'ack',
+                'ack_id': obj['msg_id'],
+                'from': self.drone_name
+            }
+            try:
+                # Отправляем подтверждение напрямую лидеру
+                self.swarm.send_custom_message_to(LEADER_DRONE, json.dumps(ack_payload))
+            except Exception as e:
+                self.logger.warning(f"Failed to send ack to leader: {e}")
+
         if cmd_type == 'takeoff':
             self.logger.info("Received TAKEOFF command from leader")
             self._takeoff_event.set()
@@ -79,17 +107,42 @@ class Stage1Mod:
             self.logger.info("Received LAND command from leader")
             self._land_event.set()
     
-    def _broadcast(self, payload):
-        """Отправка сообщения через skyros"""
+    def _broadcast_reliable(self, payload, retries=3, timeout=0.5):
+        """Надежная отправка сообщения с ожиданием подтверждения."""
         if not self.swarm:
             self.logger.warning("No swarm link; broadcast skipped")
             return False
-        try:
-            msg = json.dumps(payload)
-            return self.swarm.broadcast_custom_message(msg)
-        except Exception as e:
-            self.logger.warning(f"Broadcast failed: {e}")
-            return False
+
+        msg_id = uuid.uuid4().hex[:4]
+        payload['msg_id'] = msg_id
+
+        for i in range(retries):
+            # Очищаем старое подтверждение перед отправкой, если оно есть
+            with self._ack_lock:
+                if msg_id in self._received_acks:
+                    self._received_acks.remove(msg_id)
+
+            self.logger.info(f"Broadcasting (attempt {i+1}/{retries}): {payload}")
+            try:
+                msg = json.dumps(payload)
+                self.swarm.broadcast_custom_message(msg)
+            except Exception as e:
+                self.logger.warning(f"Broadcast failed: {e}")
+                time.sleep(timeout)
+                continue
+
+            # Ждем подтверждения
+            time.sleep(timeout)
+
+            with self._ack_lock:
+                if msg_id in self._received_acks:
+                    self.logger.info(f"ACK received for msg_id: {msg_id}")
+                    return True
+            
+            self.logger.warning(f"No ACK for {msg_id} (attempt {i+1}/{retries})")
+
+        self.logger.error(f"Broadcast failed after {retries} retries for payload: {payload}")
+        return False
     
     def _leader_run(self):
         """Логика лидера"""
@@ -139,7 +192,7 @@ class Stage1Mod:
         
         # 3) Команда взлета всем дронам
         self.logger.info("Sending TAKEOFF command to all drones")
-        self._broadcast({
+        self._broadcast_reliable({
             'type': 'takeoff',
             'to': '*',
             'z': target_z,
@@ -151,7 +204,7 @@ class Stage1Mod:
         
         # 5) Команда посадки всем дронам
         self.logger.info("Sending LAND command to all drones")
-        self._broadcast({
+        self._broadcast_reliable({
             'type': 'land',
             'to': '*'
         })
