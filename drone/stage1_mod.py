@@ -123,13 +123,24 @@ class Stage1Mod:
         msg_id = uuid.uuid4().hex[:4]
         payload['msg_id'] = msg_id
 
-        for i in range(retries):
+        # Для команды takeoff делаем бесконечные попытки
+        is_takeoff_command = payload.get('type') == 'takeoff'
+        max_attempts = float('inf')
+
+        attempt = 0
+        while attempt < max_attempts:
+            attempt += 1
+            
             # Очищаем старое подтверждение перед отправкой, если оно есть
             with self._ack_lock:
                 if msg_id in self._received_acks:
                     self._received_acks.remove(msg_id)
 
-            self.logger.info(f"Broadcasting (attempt {i+1}/{retries}): {payload}")
+            if is_takeoff_command:
+                self.logger.info(f"Broadcasting TAKEOFF (attempt {attempt}): {payload}")
+            else:
+                self.logger.info(f"Broadcasting (attempt {attempt}/{retries}): {payload}")
+            
             try:
                 msg = json.dumps(payload)
                 self.swarm.broadcast_custom_message(msg)
@@ -146,7 +157,10 @@ class Stage1Mod:
                     self.logger.info(f"ACK received for msg_id: {msg_id}")
                     return True
             
-            self.logger.warning(f"No ACK for {msg_id} (attempt {i+1}/{retries})")
+            if is_takeoff_command:
+                self.logger.warning(f"No ACK for TAKEOFF {msg_id} (attempt {attempt}) - retrying...")
+            else:
+                self.logger.warning(f"No ACK for {msg_id} (attempt {attempt}/{retries})")
 
         self.logger.error(f"Broadcast failed after {retries} retries for payload: {payload}")
         return False
@@ -238,17 +252,21 @@ class Stage1Mod:
         
         # 3) Команда взлета всем дронам
         self.logger.info("Sending TAKEOFF command to all drones")
-        self._broadcast_reliable({
+        takeoff_success = self._broadcast_reliable({
             'type': 'takeoff',
             'to': '*',
             'z': target_z,
             'qr_data': qr_data
         })
         
+        if not takeoff_success:
+            self.logger.error("Failed to send TAKEOFF command to followers. Aborting mission.")
+            return
+        
         # 4) Ждем 2 секунды
         time.sleep(4.0)
         
-        # 5) Команда посадки всем дронам
+        # 5) Команда посадки всем дронам (только если takeoff успешен)
         self.logger.info("Sending LAND command to all drones")
         self._broadcast_reliable({
             'type': 'land',
