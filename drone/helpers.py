@@ -12,7 +12,7 @@ def setup_logging(drone_name, log_level=logging.INFO):
     
     # Console handler (idempotent)
     if not any(isinstance(h, logging.StreamHandler) for h in logger.handlers):
-    console_handler = logging.StreamHandler()
+        console_handler = logging.StreamHandler()
         console_formatter = logging.Formatter(
             f'[{drone_name}] %(asctime)s - %(levelname)s - %(message)s', '%H:%M:%S'
         )

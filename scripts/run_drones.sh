@@ -20,8 +20,8 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Определяем какой скрипт запускать
-#SCRIPT_NAME=${1:-"main.py"}
-SCRIPT_NAME=${1:-"example.py"}
+SCRIPT_NAME=${1:-"main.py"}
+#SCRIPT_NAME=${1:-"example.py"}
 PYTHON_CMD="python3"
 LOG_SERVER_PID=""
 
