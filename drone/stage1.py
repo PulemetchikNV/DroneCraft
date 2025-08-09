@@ -8,7 +8,7 @@ except ImportError:
     # Mock rospy for local testing
     class MockRospy:
         def is_shutdown(self):
-        return False
+            return False
         def init_node(self, name):
             pass
     rospy = MockRospy()
