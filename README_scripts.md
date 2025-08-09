@@ -1,0 +1,164 @@
+# Скрипты автоматизации для дронов
+
+Система автоматизации для управления роем дронов через SSH.
+
+## Файлы
+
+### Конфигурация
+- `drones.txt` - Список дронов в формате `имя:ip`
+- `drone/const.py` - Константы (лидер, список дронов)
+
+### Скрипты
+- `scripts/update_drones.sh` - Обновление кода на всех дронах (git pull)
+- `scripts/run_drones.sh` - Запуск скриптов на всех дронах
+- `scripts/stop_drones.sh` - Остановка всех процессов Python
+
+## Настройка
+
+### 1. Конфигурация дронов
+
+Отредактируйте `drones.txt`:
+```
+drone6:10.135.42.35
+drone13:10.135.42.36
+drone14:10.135.42.37
+drone15:10.135.42.38
+```
+
+### 2. SSH настройки
+
+В скриптах настройте:
+```bash
+SSH_USER="pi"
+SSH_PASS="raspberry"  # Ваш пароль
+DRONE_DIR="/home/pi/DroneCraft"
+```
+
+### 3. Установка sshpass (опционально)
+
+Для автоматической аутентификации:
+```bash
+# macOS
+brew install hudochenkov/sshpass/sshpass
+
+# Ubuntu/Debian
+sudo apt-get install sshpass
+```
+
+## Использование
+
+### Обновление кода на дронах
+```bash
+./scripts/update_drones.sh
+```
+
+Выполняет на каждом дроне:
+- `cd /home/pi/DroneCraft`
+- `git pull origin main`
+- Показывает статус до и после
+
+### Запуск скриптов
+```bash
+# Запуск Stage1 (по умолчанию)
+./scripts/run_drones.sh
+
+# Запуск Stage1 явно
+./scripts/run_drones.sh main.py
+
+# Запуск Stage1 Mod
+./scripts/run_drones.sh main_stage1_mod.py
+
+# Запуск Stage2
+./scripts/run_drones.sh stage2.py
+```
+
+Режимы выполнения:
+1. **Parallel** - все дроны одновременно (по умолчанию)
+2. **Sequential** - по очереди
+
+### Остановка процессов
+```bash
+./scripts/stop_drones.sh
+```
+
+Останавливает все Python процессы на дронах.
+
+## Поддержка аргументов командной строки
+
+Все main скрипты поддерживают:
+```bash
+# Через аргумент
+python3 ./drone/main.py --drone-name=drone6
+
+# Через переменную окружения
+DRONE_NAME=drone6 python3 ./drone/main.py
+```
+
+## Структура выполнения
+
+### Stage1 (main.py)
+- Синхронизированный взлет/посадка
+- Опциональная синхронизация через UDP
+- Световая индикация
+
+### Stage1 Mod (main_stage1_mod.py)
+- Лидер: взлет → QR сканирование → команды фоловерам
+- Фоловеры: только слушают команды лидера
+- Использует skyros для связи
+
+### Stage2 (stage2.py)
+- QR рецепт крафта
+- Построение 3x3 сетки
+- Распределение ролей через swarm
+
+## Логи
+
+Все логи отправляются через UDP на сервер логов:
+```bash
+# Запуск сервера логов
+python3 ./backend/log_server.py
+```
+
+## Примеры команд
+
+```bash
+# Полный цикл разработки
+./scripts/update_drones.sh              # Обновить код
+./scripts/run_drones.sh main_stage1_mod.py  # Запустить Stage1 Mod
+# ... дождаться выполнения ...
+./scripts/stop_drones.sh                # Остановить процессы
+
+# Быстрый запуск одного скрипта
+./scripts/run_drones.sh main.py
+
+# Тестирование локально
+DRONE_NAME=drone6 python3 ./drone/main.py
+```
+
+## Устранение неполадок
+
+### SSH подключение
+```bash
+# Проверка доступности дрона
+ping 10.135.42.35
+
+# Ручное подключение
+ssh pi@10.135.42.35
+```
+
+### Логи процессов
+```bash
+# На дроне посмотреть запущенные процессы
+ps aux | grep python
+
+# Убить конкретный процесс
+pkill -f "python.*main"
+```
+
+### Git проблемы
+```bash
+# На дроне сбросить изменения
+cd /home/pi/DroneCraft
+git reset --hard HEAD
+git clean -fd
+``` 
