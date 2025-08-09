@@ -60,6 +60,9 @@ class Stage1Mod:
         self._takeoff_event = threading.Event()
         self._land_event = threading.Event()
         
+        # Follower command data
+        self._takeoff_z = 1.5  # Default takeoff height
+        
         # Ack handling
         self._received_acks = set()
         self._ack_lock = threading.Lock()
@@ -96,13 +99,16 @@ class Stage1Mod:
                 'from': self.drone_name
             }
             try:
-                # Отправляем подтверждение напрямую лидеру
-                self.swarm.send_custom_message_to(LEADER_DRONE, json.dumps(ack_payload))
+                # Отправляем подтверждение через broadcast, как это сделано в примерах
+                self.swarm.broadcast_custom_message(json.dumps(ack_payload))
             except Exception as e:
-                self.logger.warning(f"Failed to send ack to leader: {e}")
+                self.logger.warning(f"Failed to send ack via broadcast: {e}")
 
         if cmd_type == 'takeoff':
-            self.logger.info("Received TAKEOFF command from leader")
+            # Extract takeoff height from the command
+            takeoff_z = obj.get('z', 1.5)  # Default to 1.5m if not specified
+            self._takeoff_z = takeoff_z
+            self.logger.info(f"Received TAKEOFF command from leader (z={takeoff_z}m)")
             self._takeoff_event.set()
         elif cmd_type == 'land':
             self.logger.info("Received LAND command from leader")
@@ -249,10 +255,12 @@ class Stage1Mod:
             'to': '*'
         })
 
-        time.sleep(2.0)
+        # Wait for followers to start landing before leader lands
+        self.logger.info("Waiting for followers to begin landing...")
+        time.sleep(5.0)
         
-        # 6) Посадка лидера
-        self.logger.info("Leader landing")
+        # 6) Посадка лидера (последним)
+        self.logger.info("Leader landing (last)")
         try:
             self.fc.land()
         except TypeError:
@@ -273,8 +281,8 @@ class Stage1Mod:
             self.logger.warning("No takeoff command received, exiting")
             return
         
-        # Взлет
-        target_z = 3.0
+        # Взлет (используем высоту из команды лидера)
+        target_z = self._takeoff_z
         self.logger.info(f"Follower takeoff to {target_z}m")
         
         if 'speed' in self.fc.takeoff.__code__.co_varnames:
