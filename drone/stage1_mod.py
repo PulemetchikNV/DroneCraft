@@ -104,21 +104,38 @@ class Stage1Mod:
             self.fc.takeoff(z=target_z, delay=2, speed=0.5)
         else:
             self.fc.takeoff(z=target_z, delay=2, time_spam=3.0, time_warm=2, time_up=1.0)
+
+        time.sleep(3)
         
         # 2) Ожидание и сканирование QR кода
         self.logger.info("Waiting for QR code...")
-        qr_codes = None
-        try:
-            qr_codes = self.fc.scan_qr_code(timeout=10.0)
-            if qr_codes and len(qr_codes) > 0:
-                qr_data = qr_codes[0]
-                self.logger.info(f"QR CODE DETECTED: {qr_data}")
-            else:
-                self.logger.warning("No QR code detected, continuing...")
-                qr_data = "NO_QR_DETECTED"
-        except Exception as e:
-            self.logger.error(f"QR scan failed: {e}")
-            qr_data = "QR_SCAN_ERROR"
+        
+        scan_duration = 10.0
+        scan_start_time = time.time()
+        qr_data = "NO_QR_DETECTED"
+
+        self.logger.info(f"Scanning for QR code for {scan_duration:.1f} seconds...")
+        while time.time() - scan_start_time < scan_duration:
+            try:
+                # Use a short timeout for each individual check
+                qr_codes = self.fc.scan_qr_code(timeout=0.5)
+                if qr_codes:
+                    qr_data = qr_codes[0]
+                    self.logger.info(f"QR CODE DETECTED: {qr_data}")
+                    break 
+            except Exception as e:
+                self.logger.error(f"QR scan failed during polling: {e}")
+                qr_data = "QR_SCAN_ERROR"
+                break
+            
+            if rospy.is_shutdown():
+                self.logger.warning("ROS shutdown requested, stopping QR scan.")
+                break
+
+            time.sleep(0.5)
+
+        if qr_data == "NO_QR_DETECTED":
+            self.logger.warning("No QR code detected after scan period, continuing...")
         
         # 3) Команда взлета всем дронам
         self.logger.info("Sending TAKEOFF command to all drones")
@@ -130,7 +147,7 @@ class Stage1Mod:
         })
         
         # 4) Ждем 2 секунды
-        time.sleep(2.0)
+        time.sleep(4.0)
         
         # 5) Команда посадки всем дронам
         self.logger.info("Sending LAND command to all drones")
@@ -138,6 +155,8 @@ class Stage1Mod:
             'type': 'land',
             'to': '*'
         })
+
+        time.sleep(2.0)
         
         # 6) Посадка лидера
         self.logger.info("Leader landing")
