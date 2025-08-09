@@ -22,9 +22,9 @@ else:
     print("No drone name specified, using default")
 
 try:
-    from .stage1 import Stage1 as Drone
+    from .stage2 import Stage2 as Drone
 except ImportError:
-    from stage1 import Stage1 as Drone
+    from stage2 import Stage2 as Drone
 
 try:
     import rospy
