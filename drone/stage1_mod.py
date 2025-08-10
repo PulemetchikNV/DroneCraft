@@ -28,10 +28,19 @@ try:
     from .flight import FlightController
     from .helpers import setup_logging
     from .const import DRONE_LIST, LEADER_DRONE
+    from .stage2 import drone_name_to_short, short_to_drone_name
 except ImportError:
     from flight import FlightController
     from helpers import setup_logging
     from const import DRONE_LIST, LEADER_DRONE
+    try:
+        from stage2 import drone_name_to_short, short_to_drone_name
+    except ImportError:
+        # Fallback если stage2 недоступен
+        def drone_name_to_short(name):
+            return name[5:] if name.startswith('drone') else name
+        def short_to_drone_name(short):
+            return f"drone{short}" if short.isdigit() else short
 
 # skyros optional import
 try:

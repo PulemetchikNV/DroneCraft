@@ -158,6 +158,26 @@ def pick_color_for_item(item):
         return dict(r=255, g=255, b=255) # Unknown - white
 
 
+def drone_name_to_short(drone_name):
+    """
+    Конвертирует полное имя дрона в короткий номер для экономии места в сообщениях
+    drone6 -> 6, drone19 -> 19, drone123 -> 123
+    """
+    if drone_name.startswith('drone'):
+        return drone_name[5:]  # убираем префикс "drone"
+    return drone_name  # если нет префикса, возвращаем как есть
+
+
+def short_to_drone_name(short_name):
+    """
+    Конвертирует короткий номер обратно в полное имя дрона
+    6 -> drone6, 19 -> drone19, 123 -> drone123
+    """
+    if short_name.isdigit() or (short_name.startswith('-') and short_name[1:].isdigit()):
+        return f"drone{short_name}"
+    return short_name  # если не число, возвращаем как есть
+
+
 class Stage2:
     def __init__(self):
         # Загружаем конфигурацию из .env файла
@@ -220,8 +240,8 @@ class Stage2:
         # --- Command handling (for followers) ---
         target = obj.get('to', '*')
         
-        # Проверяем что команда для нас
-        if target != '*' and target != self.drone_name:
+        # Проверяем что команда для нас (поддерживаем как полные, так и сокращённые имена)
+        if target != '*' and target != self.drone_name and target != drone_name_to_short(self.drone_name):
             return
             
         # Отправляем ack, если есть msg_id
@@ -236,8 +256,9 @@ class Stage2:
             except Exception as e:
                 self.logger.warning(f"Failed to send ack via broadcast: {e}")
 
-        # Обработка сокращённых команд
-        if (cmd_type == 'assign' or obj.get('t') == 'a') and target == self.drone_name:
+        # Обработка сокращённых команд (поддерживаем как полные, так и сокращённые имена)
+        target_matches = (target == self.drone_name or target == drone_name_to_short(self.drone_name))
+        if (cmd_type == 'assign' or obj.get('t') == 'a') and target_matches:
             self.logger.info(f"Received ASSIGN command from leader: {obj}")
             # Преобразуем сокращённый формат в полный
             if obj.get('t') == 'a':  # сокращённый формат
@@ -320,7 +341,7 @@ class Stage2:
     # ---- leader flow ----
     def _leader_run(self):
         """Логика лидера для Stage2"""
-        LEADER_Z = 2.0
+        LEADER_Z = 1.0
 
         self.logger.info("Starting Stage2 leader sequence")
         
@@ -482,7 +503,7 @@ class Stage2:
             # Сокращаем для экономии места (<125 символов)
             short_assignment = {
                 't': 'a',  # type: assign
-                'to': assignment['to'],
+                'to': drone_name_to_short(assignment['to']),  # 6 вместо drone6
                 'c': assignment['cell'],
                 'i': assignment['item'],
                 'x': round(assignment['target']['x'], 3),
