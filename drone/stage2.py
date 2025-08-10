@@ -27,11 +27,11 @@ except ImportError:
 try:
     from .flight import FlightController
     from .helpers import setup_logging
-    from .const import DRONE_LIST, LEADER_DRONE
+    from .const import DRONE_LIST, LEADER_DRONE, DRONE_ROLES
 except ImportError:
     from flight import FlightController
     from helpers import setup_logging
-    from const import DRONE_LIST, LEADER_DRONE
+    from const import DRONE_LIST, LEADER_DRONE, DRONE_ROLES
 
 # skyros optional import
 try:
@@ -547,12 +547,34 @@ class Stage2:
         num_to_assign = min(len(items_needed), len(all_drones))
         self.logger.info(f"Assigning {num_to_assign} items using recipe layout: {remaining_layout}")
 
-        # Подготовим позиции и сопоставим элементам
+        # Подготовим сопоставление: на каждый требуемый item подберём подходящего дрона по DRONE_ROLES
         # remaining_layout: List[(grid_index, item)] — два элемента (без QR)
-        # items_needed: три символа, но один — это QR. Поэтому раздаём только по remaining_layout
-        for i in range(min(len(remaining_layout), len(all_drones))):
-            grid_idx, item = remaining_layout[i]
-            drone_name = all_drones[i]
+        # Построим списки кандидатов по ролям
+        leader_name = self.drone_name
+        role_of = lambda name: DRONE_ROLES.get(name, 'ANY').upper()
+
+        # Доступные дроны с их ролями, лидер первый
+        drones_with_roles = [(name, role_of(name)) for name in all_drones]
+
+        # Для стабильности всегда пытаться назначить лидера только если его роль совпадает с требуемым item
+        used_drones = set()
+        for grid_idx, item in remaining_layout:
+            # ищем точное совпадение роли
+            chosen = None
+            for name, role in drones_with_roles:
+                if name in used_drones:
+                    continue
+                if role == item or role == 'ANY':
+                    chosen = (name, role)
+                    break
+            if chosen is None:
+                # если не нашлось по роли — пропустим (не должно случаться при корректных конфигурациях)
+                self.logger.warning(f"No drone available for item '{item}', skipping position {grid_idx}")
+                continue
+
+            drone_name, _ = chosen
+            used_drones.add(drone_name)
+
             color = pick_color_for_item(item)
             target_position = grid_positions[grid_idx]
 
@@ -572,7 +594,7 @@ class Stage2:
                 'aruco_id': target_position.get('aruco_id')
             }
 
-            if drone_name == self.drone_name:
+            if drone_name == leader_name:
                 leader_assignment = assignment
                 self.logger.info(f"  Assign LEADER: {item} -> pos {grid_idx} ({target_position['x']:.1f}, {target_position['y']:.1f})")
             else:
