@@ -8,7 +8,7 @@ import math
 
 # rospy fallback for local testing
 try:
-import rospy
+    import rospy
 except ImportError:
     # Mock rospy for local testing
     class MockRospy:
@@ -247,8 +247,9 @@ class Stage2:
         msg_id = uuid.uuid4().hex[:4]
         payload['msg_id'] = msg_id
 
-        # Для всех команд делаем бесконечные попытки
-        max_attempts = float('inf')
+        # Для команды takeoff делаем бесконечные попытки
+        is_takeoff_command = payload.get('type') == 'takeoff'
+        max_attempts = float('inf') if is_takeoff_command else retries
 
         attempt = 0
         while attempt < max_attempts:
@@ -259,13 +260,16 @@ class Stage2:
                 if msg_id in self._received_acks:
                     self._received_acks.remove(msg_id)
 
-            self.logger.info(f"Broadcasting (attempt {attempt}): {payload}")
+            if is_takeoff_command:
+                self.logger.info(f"Broadcasting TAKEOFF (attempt {attempt}): {payload}")
+            else:
+                self.logger.info(f"Broadcasting (attempt {attempt}/{retries}): {payload}")
             
-        try:
-            msg = json.dumps(payload)
+            try:
+                msg = json.dumps(payload)
                 self.swarm.broadcast_custom_message(msg)
-        except Exception as e:
-            self.logger.warning(f"Broadcast failed: {e}")
+            except Exception as e:
+                self.logger.warning(f"Broadcast failed: {e}")
                 time.sleep(timeout)
                 continue
 
@@ -277,9 +281,13 @@ class Stage2:
                     self.logger.info(f"ACK received for msg_id: {msg_id}")
                     return True
             
-            self.logger.warning(f"No ACK for {msg_id} (attempt {attempt}) - retrying...")
+            if is_takeoff_command:
+                self.logger.warning(f"No ACK for TAKEOFF {msg_id} (attempt {attempt}) - retrying...")
+            else:
+                self.logger.warning(f"No ACK for {msg_id} (attempt {attempt}/{retries})")
 
-            return False
+        self.logger.error(f"Broadcast failed after {retries} retries for payload: {payload}")
+        return False
 
     # ---- leader flow ----
     def _leader_run(self):
