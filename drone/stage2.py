@@ -75,31 +75,106 @@ ARUCO_GRID_ALT = {
 
 # Crafting recipes as 3x3 matrices
 CRAFTING_RECIPES = {
-    0: {  # Diamond Pickaxe
-        'name': 'Diamond Pickaxe',
+    3: {  
+        'name': 'Алмазная мотыга',
         'matrix': [
-            ['D', 'D', 'D'],  # Row 0
-            ['',  'S', ''],   # Row 1
+            ['D',  'D', ''],   # Row 0
+            ['', 'S', ''],  # Row 1
             ['',  'S', '']    # Row 2
-        ]
-    },
-    1: {  # Diamond Axe
-        'name': 'Diamond Axe', 
-        'matrix': [
-            ['D', 'D', ''],   # Row 0
-            ['D', 'S', ''],   # Row 1
-            ['',  'S', '']    # Row 2
-        ]
-    },
-    2: {  # Diamond Mace
-        'name': 'Diamond Mace',
-        'matrix': [
-            ['',  'D', 'D'],   # Row 0
-            ['', 'D', 'D'],  # Row 1
-            ['S',  '', '']    # Row 2
         ]
     }
 }
+
+# Базовые шаблоны рецептов как набор координат в системе 3x3
+# Для id=3 (алмазная мотыга) базовая ориентация:
+# (row, col, item) — блоки рецепта; пустые ячейки не включаются
+# Базовая ориентация (как в матрице выше):
+#   D D .
+#   . S .
+#   . S .
+RECIPE_PATTERNS = {
+    3: [
+        (0, 0, 'D'),
+        (0, 1, 'D'),
+        (1, 1, 'S'),
+        (2, 1, 'S'),
+    ]
+}
+
+def rotate_coord_3x3(row: int, col: int, turns: int) -> tuple:
+    """Повернуть координату (row, col) в сетке 3x3 на 90° * turns по часовой стрелке."""
+    r, c = row, col
+    turns = turns % 4
+    for _ in range(turns):
+        # (r, c) -> (c, 2 - r)
+        r, c = c, 2 - r
+    return r, c
+
+def find_layout_for_recipe(recipe_id: int, qr_grid_index: int, items_needed: list) -> list:
+    """
+    Подбирает расположение блоков рецепта относительно позиции QR с учётом всех поворотов.
+    QR считается одним из блоков рецепта (D или S) и занимает одну из 4 позиций шаблона.
+
+    Args:
+        recipe_id: ID рецепта (например, 3 — мотыга)
+        qr_grid_index: позиция QR (0..8)
+        items_needed: список блоков для 3 дронов, например ['D','D','S']
+
+    Returns:
+        Список из трёх кортежей (grid_index, item) для дронов.
+        Если подходящее расположение не найдено — пустой список.
+    """
+    from collections import Counter
+
+    if recipe_id not in RECIPE_PATTERNS:
+        return []
+
+    base = RECIPE_PATTERNS[recipe_id]
+    qr_row, qr_col = grid_index_to_row_col(qr_grid_index)
+    needed_counter = Counter(items_needed)
+
+    # Перебираем все повороты
+    for turns in range(4):
+        rotated = []
+        for r, c, item in base:
+            rr, cc = rotate_coord_3x3(r, c, turns)
+            rotated.append((rr, cc, item))
+
+        # Перебираем каждую из 4 позиций как якорь под QR
+        for anchor_idx in range(len(rotated)):
+            ar, ac, anchor_item = rotated[anchor_idx]
+            # QR заменяет один из блоков (он может быть 'D' или 'S')
+            # Вычисляем сдвиг, чтобы привязать якорную позицию к текущему QR
+            drow = qr_row - ar
+            dcol = qr_col - ac
+
+            absolute = []
+            out_of_bounds = False
+            for r, c, item in rotated:
+                rr, cc = r + drow, c + dcol
+                if not (0 <= rr <= 2 and 0 <= cc <= 2):
+                    out_of_bounds = True
+                    break
+                absolute.append((rr, cc, item))
+            if out_of_bounds:
+                continue
+
+            # Разделяем QR-позицию и остальные позиции
+            qr_abs_rc = (qr_row, qr_col)
+            remaining = []  # (grid_index, item)
+            for r, c, item in absolute:
+                if (r, c) == qr_abs_rc:
+                    # Это место занимает QR — пропускаем
+                    continue
+                remaining.append((row_col_to_grid_index(r, c), item))
+
+            # Проверяем, что по типам блоков остаётся ровно нужный набор
+            remaining_counter = Counter([it for _, it in remaining])
+            if remaining_counter == needed_counter:
+                return remaining
+
+    return []
+
 
 def grid_index_to_row_col(index):
     """Convert grid index (0-8) to (row, col) coordinates"""
@@ -454,62 +529,55 @@ class Stage2:
         qr_coords = grid_positions[qr_grid_index]
         self.logger.info(f"QR code at position {qr_grid_index}: ({qr_coords['x']:.1f}, {qr_coords['y']:.1f})")
 
-        # 5) Assign drones directly based on items_needed (без recipe matrix)
+        # 5) Assign drones using recipe layout aligned to QR (учёт поворотов и QR как одного из блоков)
         assignments = []
         leader_assignment = None
-        
+
         # Получаем список всех дронов
         available_drones = [d.strip() for d in DRONE_LIST.split(',') if d.strip()] if DRONE_LIST else []
         all_drones = [self.drone_name] + available_drones  # Leader first
-        
-        self.logger.info(f"Assigning {len(items_needed)} items to {len(all_drones)} available drones:")
-        
-        # Назначаем каждый элемент дрону на уникальную позицию
-        used_positions = {qr_grid_index}  # QR позиция уже занята
-        
-        for i, item in enumerate(items_needed):
-            if i < len(all_drones):
-                drone_name = all_drones[i]
-                color = pick_color_for_item(item)
-                
-                # Находим свободную позицию (не QR позицию и не использованную)
-                target_position = None
-                pos_idx = None
-                for pos_idx in range(9):  # 0-8
-                    if pos_idx not in used_positions:  # Пропускаем занятые позиции
-                        target_position = grid_positions[pos_idx]
-                        used_positions.add(pos_idx)  # Помечаем как занятую
-                        break
-                
-                if target_position:
-                    assignment = {
-                        'type': 'assign',
-                        'to': drone_name,
-                        'cell': pos_idx,
-                        'item': item,
-                        'target': {
-                            'x': target_position['x'], 
-                            'y': target_position['y'], 
-                            'z': self.target_z
-                        },
-                        'color': color,
-                        'recipe_id': recipe_id,
-                        'qr_grid_index': qr_grid_index,
-                        'aruco_id': target_position.get('aruco_id')
-                    }
-                    
-                    if drone_name == self.drone_name:
-                        # This is leader's assignment
-                        leader_assignment = assignment
-                        self.logger.info(f"  Item {i+1}: {item} -> LEADER at position {pos_idx} ({target_position['x']:.1f}, {target_position['y']:.1f})")
-                    else:
-                        # Regular follower assignment
-                        assignments.append(assignment)
-                        self.logger.info(f"  Item {i+1}: {item} -> {drone_name} at position {pos_idx} ({target_position['x']:.1f}, {target_position['y']:.1f})")
-                else:
-                    self.logger.error(f"No available position for item {i+1}: {item}")
+
+        # Строим целевую раскладку двух оставшихся блоков по рецепту
+        remaining_layout = find_layout_for_recipe(recipe_id, qr_grid_index, items_needed)
+        if not remaining_layout:
+            self.logger.error("Failed to build recipe layout relative to QR. Aborting mission.")
+            return
+
+        # Если дронов меньше чем элементов — назначим сколько сможем слева-направо
+        num_to_assign = min(len(items_needed), len(all_drones))
+        self.logger.info(f"Assigning {num_to_assign} items using recipe layout: {remaining_layout}")
+
+        # Подготовим позиции и сопоставим элементам
+        # remaining_layout: List[(grid_index, item)] — два элемента (без QR)
+        # items_needed: три символа, но один — это QR. Поэтому раздаём только по remaining_layout
+        for i in range(min(len(remaining_layout), len(all_drones))):
+            grid_idx, item = remaining_layout[i]
+            drone_name = all_drones[i]
+            color = pick_color_for_item(item)
+            target_position = grid_positions[grid_idx]
+
+            assignment = {
+                'type': 'assign',
+                'to': drone_name,
+                'cell': grid_idx,
+                'item': item,
+                'target': {
+                    'x': target_position['x'],
+                    'y': target_position['y'],
+                    'z': self.target_z
+                },
+                'color': color,
+                'recipe_id': recipe_id,
+                'qr_grid_index': qr_grid_index,
+                'aruco_id': target_position.get('aruco_id')
+            }
+
+            if drone_name == self.drone_name:
+                leader_assignment = assignment
+                self.logger.info(f"  Assign LEADER: {item} -> pos {grid_idx} ({target_position['x']:.1f}, {target_position['y']:.1f})")
             else:
-                self.logger.warning(f"  Item {i+1}: {item} -> NO DRONE AVAILABLE!")
+                assignments.append(assignment)
+                self.logger.info(f"  Assign {drone_name}: {item} -> pos {grid_idx} ({target_position['x']:.1f}, {target_position['y']:.1f})")
 
         # 6) Send assignments to followers with reliable messaging
         self.logger.info(f"Sending {len(assignments)} assignments to follower drones")
