@@ -187,7 +187,6 @@ class Stage1Mod:
         # Waypoints form a rectangle slightly smaller than the one defined by markers 130-133
         # in aruco_map_dronecraft_v2.txt, to be "near the corners".
         waypoints = [
-            {'x': -1.2, 'y': -1.5, 'z': target_z, 'speed': 0.4},
             {'x':  1.2, 'y': -1.5, 'z': target_z, 'speed': 0.4},
             {'x':  1.2, 'y':  1.5, 'z': target_z, 'speed': 0.4},
             {'x': -1.2, 'y':  1.5, 'z': target_z, 'speed': 0.4},

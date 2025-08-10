@@ -8,7 +8,7 @@ import math
 
 # rospy fallback for local testing
 try:
-import rospy
+    import rospy
 except ImportError:
     # Mock rospy for local testing
     class MockRospy:
@@ -220,9 +220,9 @@ class Stage2:
         # Отправляем ack, если есть msg_id
         if 'msg_id' in obj and not self.is_leader and self.swarm:
             ack_payload = {
-                't': 'k',  # ack
-                'aid': obj['msg_id'],
-                'f': self.drone_name
+                'type': 'ack',
+                'ack_id': obj['msg_id'],
+                'from': self.drone_name
             }
             try:
                 self.swarm.broadcast_custom_message(json.dumps(ack_payload))
@@ -246,27 +246,29 @@ class Stage2:
         msg_id = uuid.uuid4().hex[:4]
         payload['msg_id'] = msg_id
 
-        # Для команды takeoff делаем бесконечные попытки
-        is_takeoff_command = payload.get('t') == 't'
-        max_attempts = float('inf') if is_takeoff_command else retries
+        # Для команды assign делаем бесконечные попытки
+        is_assign_command = payload.get('type') == 'assign'
+        max_attempts = float('inf') if is_assign_command else retries
 
         attempt = 0
         while attempt < max_attempts:
             attempt += 1
+            
             # Очищаем старое подтверждение перед отправкой, если оно есть
             with self._ack_lock:
                 if msg_id in self._received_acks:
                     self._received_acks.remove(msg_id)
 
-            if is_takeoff_command:
-                self.logger.info(f"Broadcasting TAKEOFF (attempt {attempt}): {payload}")
+            if is_assign_command:
+                self.logger.info(f"Broadcasting ASSIGN (attempt {attempt}): {payload}")
             else:
                 self.logger.info(f"Broadcasting (attempt {attempt}/{retries}): {payload}")
-        try:
-            msg = json.dumps(payload)
+            
+            try:
+                msg = json.dumps(payload)
                 self.swarm.broadcast_custom_message(msg)
-        except Exception as e:
-            self.logger.warning(f"Broadcast failed: {e}")
+            except Exception as e:
+                self.logger.warning(f"Broadcast failed: {e}")
                 time.sleep(timeout)
                 continue
 
@@ -277,13 +279,14 @@ class Stage2:
                 if msg_id in self._received_acks:
                     self.logger.info(f"ACK received for msg_id: {msg_id}")
                     return True
-            if is_takeoff_command:
-                self.logger.warning(f"No ACK for TAKEOFF {msg_id} (attempt {attempt}) - retrying...")
+            
+            if is_assign_command:
+                self.logger.warning(f"No ACK for ASSIGN {msg_id} (attempt {attempt}) - retrying...")
             else:
                 self.logger.warning(f"No ACK for {msg_id} (attempt {attempt}/{retries})")
 
         self.logger.error(f"Broadcast failed after {retries} retries for payload: {payload}")
-            return False
+        return False
 
     # ---- leader flow ----
     def _leader_run(self):
@@ -293,7 +296,7 @@ class Stage2:
         self.logger.info("Starting Stage2 leader sequence")
         
         # 1) Взлет лидера
-        self.logger.info(f"Leader takeoff to {self.target_z}m")
+        self.logger.info(f"Leader takeoff to {LEADER_Z}m")
         if 'speed' in self.fc.takeoff.__code__.co_varnames:
             self.fc.takeoff(z=LEADER_Z, delay=2, speed=0.5)
         else:
@@ -338,6 +341,8 @@ class Stage2:
                         break 
                 except Exception as e:
                     self.logger.error(f"QR scan failed during polling: {e}")
+                    recipe_code = "QR_SCAN_ERROR"
+                    qr_found = True
                     break
 
                 # 2. Check for arrival at the waypoint
@@ -444,18 +449,23 @@ class Stage2:
         # 6) Send assignments to followers with reliable messaging
         self.logger.info(f"Sending {len(assignments)} assignments to follower drones")
         for assignment in assignments:
-            # Сокращаем ключи для broadcast, убираем r,g,b,rid,qid,aid
-            short_assignment = {
-                't': 'a',  # assign
+            # Используем полные ключи для надёжности
+            full_assignment = {
+                'type': 'assign',
                 'to': assignment['to'],
-                'c': assignment['cell'],
-                'i': assignment['item'],
-                'x': round(assignment['target']['x'], 3),
-                'y': round(assignment['target']['y'], 3),
-                'z': round(assignment['target']['z'], 2),
-                'mid': uuid.uuid4().hex[:4]
+                'cell': assignment['cell'],
+                'item': assignment['item'],
+                'target': {
+                    'x': round(assignment['target']['x'], 3),
+                    'y': round(assignment['target']['y'], 3),
+                    'z': round(assignment['target']['z'], 2)
+                },
+                'color': assignment['color'],
+                'recipe_id': assignment['recipe_id'],
+                'qr_grid_index': assignment['qr_grid_index'],
+                'aruco_id': assignment['aruco_id']
             }
-            success = self._broadcast_reliable(short_assignment)
+            success = self._broadcast_reliable(full_assignment)
             if not success:
                 self.logger.error(f"Failed to send assignment to {assignment['to']}. Aborting mission.")
                 return
@@ -498,14 +508,13 @@ class Stage2:
 
         # 9) Final formation check (optional visual indicator)
         self.logger.info("Sending final blink command")
-        self._broadcast_reliable({'t': 'b', 'to': '*', 'mid': uuid.uuid4().hex[:4]})
+        self._broadcast_reliable({'type': 'blink', 'to': '*'})
         
         # 10) Land all drones (leader last)
         self.logger.info("Sending LAND command to all drones")
         land_success = self._broadcast_reliable({
-            't': 'l',  # land
-            'to': '*',
-            'mid': uuid.uuid4().hex[:4]
+            'type': 'land',
+            'to': '*'
         })
         if not land_success:
             self.logger.warning("Failed to send LAND command, but continuing with leader landing")
