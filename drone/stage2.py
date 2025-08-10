@@ -220,12 +220,11 @@ class Stage2:
         # Отправляем ack, если есть msg_id
         if 'msg_id' in obj and not self.is_leader and self.swarm:
             ack_payload = {
-                'type': 'ack',
-                'ack_id': obj['msg_id'],
-                'from': self.drone_name
+                't': 'k',  # ack
+                'aid': obj['msg_id'],
+                'f': self.drone_name
             }
             try:
-                # Отправляем подтверждение через broadcast
                 self.swarm.broadcast_custom_message(json.dumps(ack_payload))
             except Exception as e:
                 self.logger.warning(f"Failed to send ack via broadcast: {e}")
@@ -248,13 +247,12 @@ class Stage2:
         payload['msg_id'] = msg_id
 
         # Для команды takeoff делаем бесконечные попытки
-        is_takeoff_command = payload.get('type') == 'takeoff'
+        is_takeoff_command = payload.get('t') == 't'
         max_attempts = float('inf') if is_takeoff_command else retries
 
         attempt = 0
         while attempt < max_attempts:
             attempt += 1
-            
             # Очищаем старое подтверждение перед отправкой, если оно есть
             with self._ack_lock:
                 if msg_id in self._received_acks:
@@ -264,7 +262,6 @@ class Stage2:
                 self.logger.info(f"Broadcasting TAKEOFF (attempt {attempt}): {payload}")
             else:
                 self.logger.info(f"Broadcasting (attempt {attempt}/{retries}): {payload}")
-            
             try:
                 msg = json.dumps(payload)
                 self.swarm.broadcast_custom_message(msg)
@@ -280,7 +277,6 @@ class Stage2:
                 if msg_id in self._received_acks:
                     self.logger.info(f"ACK received for msg_id: {msg_id}")
                     return True
-            
             if is_takeoff_command:
                 self.logger.warning(f"No ACK for TAKEOFF {msg_id} (attempt {attempt}) - retrying...")
             else:
@@ -413,7 +409,7 @@ class Stage2:
                         color = pick_color_for_item(required_item)
                         
                         assignment = {
-                            'type': 'assign',
+                'type': 'assign',
                             'to': drone_name,
                             'cell': grid_index,
                             'item': required_item,
@@ -422,7 +418,7 @@ class Stage2:
                                 'y': aruco_info['y'], 
                                 'z': self.target_z
                             },
-                            'color': color,
+                'color': color,
                             'recipe_id': recipe_id,
                             'qr_grid_index': qr_grid_index,
                             'aruco_id': aruco_info['aruco_id']
@@ -446,7 +442,23 @@ class Stage2:
         # 6) Send assignments to followers with reliable messaging
         self.logger.info(f"Sending {len(assignments)} assignments to follower drones")
         for assignment in assignments:
-            success = self._broadcast_reliable(assignment)
+            # Сокращаем ключи для broadcast
+            short_assignment = {
+                't': 'a',  # assign
+                'to': assignment['to'],
+                'c': assignment['cell'],
+                'i': assignment['item'],
+                'x': round(assignment['target']['x'], 3),
+                'y': round(assignment['target']['y'], 3),
+                'z': round(assignment['target']['z'], 2),
+                'r': assignment['color']['r'],
+                'g': assignment['color']['g'],
+                'b': assignment['color']['b'],
+                'rid': assignment['recipe_id'],
+                'qid': assignment['qr_grid_index'],
+                'aid': assignment['aruco_id']
+            }
+            success = self._broadcast_reliable(short_assignment)
             if not success:
                 self.logger.error(f"Failed to send assignment to {assignment['to']}. Aborting mission.")
                 return
@@ -489,11 +501,15 @@ class Stage2:
 
         # 9) Final formation check (optional visual indicator)
         self.logger.info("Sending final blink command")
-        self._broadcast_reliable({'type': 'blink', 'to': '*', 'color': {'r': 0, 'g': 255, 'b': 0}})
+        self._broadcast_reliable({'t': 'b', 'to': '*', 'r': 0, 'g': 255, 'b': 0, 'mid': uuid.uuid4().hex[:4]})
         
         # 10) Land all drones (leader last)
         self.logger.info("Sending LAND command to all drones")
-        land_success = self._broadcast_reliable({'type': 'land', 'to': '*'})
+        land_success = self._broadcast_reliable({
+            't': 'l',  # land
+            'to': '*',
+            'mid': uuid.uuid4().hex[:4]
+        })
         if not land_success:
             self.logger.warning("Failed to send LAND command, but continuing with leader landing")
 
