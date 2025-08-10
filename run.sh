@@ -1,0 +1,1 @@
+python3 ./drone/main_2.py
