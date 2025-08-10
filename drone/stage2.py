@@ -8,7 +8,7 @@ import math
 
 # rospy fallback for local testing
 try:
-    import rospy
+import rospy
 except ImportError:
     # Mock rospy for local testing
     class MockRospy:
@@ -262,11 +262,11 @@ class Stage2:
                 self.logger.info(f"Broadcasting TAKEOFF (attempt {attempt}): {payload}")
             else:
                 self.logger.info(f"Broadcasting (attempt {attempt}/{retries}): {payload}")
-            try:
-                msg = json.dumps(payload)
+        try:
+            msg = json.dumps(payload)
                 self.swarm.broadcast_custom_message(msg)
-            except Exception as e:
-                self.logger.warning(f"Broadcast failed: {e}")
+        except Exception as e:
+            self.logger.warning(f"Broadcast failed: {e}")
                 time.sleep(timeout)
                 continue
 
@@ -283,7 +283,7 @@ class Stage2:
                 self.logger.warning(f"No ACK for {msg_id} (attempt {attempt}/{retries})")
 
         self.logger.error(f"Broadcast failed after {retries} retries for payload: {payload}")
-        return False
+            return False
 
     # ---- leader flow ----
     def _leader_run(self):

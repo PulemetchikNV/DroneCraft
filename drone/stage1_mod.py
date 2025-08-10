@@ -268,10 +268,7 @@ class Stage1Mod:
         
         # 5) Команда посадки всем дронам (только если takeoff успешен)
         self.logger.info("Sending LAND command to all drones")
-        self._broadcast_reliable({
-            'type': 'land',
-            'to': '*'
-        })
+        self._broadcast_reliable({'type': 'land', 'to': '*', 'msg_id': uuid.uuid4().hex[:4]}, retries=3)
 
         # Wait for followers to start landing before leader lands
         self.logger.info("Waiting for followers to begin landing...")
