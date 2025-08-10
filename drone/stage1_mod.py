@@ -264,7 +264,7 @@ class Stage1Mod:
             return
         
         # 4) Ждем 2 секунды
-        time.sleep(4.0)
+        time.sleep(12.0)
         
         # 5) Команда посадки всем дронам (только если takeoff успешен)
         self.logger.info("Sending LAND command to all drones")
