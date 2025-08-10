@@ -1,1 +1,1 @@
-drone6:drone6.local;drone13:drone13.local;drone14:drone14.local;drone19:drone19.local;
+drone6:drone6.local;drone13:drone13.local;drone19:drone19.local;
