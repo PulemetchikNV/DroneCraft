@@ -109,9 +109,30 @@ def row_col_to_grid_index(row, col):
     """Convert (row, col) to grid index (0-8)"""
     return row * 3 + col
 
+def get_simple_grid_coordinates():
+    """
+    Генерирует простую сетку 3x3 с позициями дронов от (0,0) с отступом 1 метр
+    Для нового формата QR-кодов с 3 дронами
+    Returns:
+        dict: {grid_index: {'x': x, 'y': y}}
+    """
+    positions = {}
+    
+    for row in range(3):
+        for col in range(3):
+            grid_index = row_col_to_grid_index(row, col)
+            positions[grid_index] = {
+                'x': float(col),      # 0, 1, 2 метра по X
+                'y': float(row),      # 0, 1, 2 метра по Y  
+                'aruco_id': None      # Не используем ArUco маркеры
+            }
+    
+    return positions
+
+
 def get_aruco_coordinates(grid_type='main'):
     """
-    Get ArUco marker coordinates for the 3x3 grid
+    Get ArUco marker coordinates for the 3x3 grid (legacy)
     Args:
         grid_type: 'main' or 'alt' to choose which grid to use
     Returns:
@@ -134,15 +155,15 @@ def get_aruco_coordinates(grid_type='main'):
 
 def parse_recipe_code(code):
     """
-    Parse QR recipe code like '025SDD'
+    Parse QR recipe code like '37DDS' (новый формат для 3 дронов)
     Returns: (recipe_id, qr_grid_index, items_needed)
     """
-    if len(code) < 6:
+    if len(code) < 5:
         raise ValueError(f"Recipe code too short: {code}")
     
     recipe_id = int(code[0])
     qr_grid_index = int(code[1])  # This is the index in our 3x3 grid (0-8)
-    items_needed = list(code[2:])
+    items_needed = list(code[2:])  # DDS -> ['D', 'D', 'S'] для 3 дронов
     
     return recipe_id, qr_grid_index, items_needed
 
@@ -412,90 +433,83 @@ class Stage2:
 
         # Fall back to environment or default recipe if QR not found
         if not recipe_code:
-            recipe_code = get_env_with_default('RECIPE', '025SDD')
+            recipe_code = get_env_with_default('RECIPE', '37DDS')  # Новый формат по умолчанию
             self.logger.warning(f"No QR code found, using fallback recipe: {recipe_code}")
 
-        # 3) Parse recipe and determine crafting grid
+        # 3) Parse recipe and assign drones directly (новый формат для 3 дронов)
         try:
             recipe_id, qr_grid_index, items_needed = parse_recipe_code(recipe_code)
-            recipe_info = CRAFTING_RECIPES.get(recipe_id)
-            if not recipe_info:
-                raise ValueError(f"Unknown recipe ID: {recipe_id}")
             
-            self.logger.info(f"Crafting: {recipe_info['name']} (recipe {recipe_id})")
-            self.logger.info(f"QR grid position: {qr_grid_index}, Items needed: {items_needed}")
+            self.logger.info(f"Recipe ID: {recipe_id}")
+            self.logger.info(f"QR grid position: {qr_grid_index}")
+            self.logger.info(f"Items needed: {items_needed} (для {len(items_needed)} дронов)")
             
         except Exception as e:
             self.logger.error(f"Failed to parse recipe '{recipe_code}': {e}")
             return
 
-        # 4) Get ArUco grid coordinates (use main grid by default)
-        grid_type = get_env_with_default('ARUCO_GRID_TYPE', 'main')  # 'main' or 'alt'
-        grid_positions = get_aruco_coordinates(grid_type)
+        # 4) Get simple grid coordinates (от 0,0 с отступом 1 метр)
+        grid_positions = get_simple_grid_coordinates()
         
-        self.logger.info(f"Using {grid_type} ArUco grid for crafting")
         qr_coords = grid_positions[qr_grid_index]
-        self.logger.info(f"QR code is at ArUco {qr_coords['aruco_id']}: ({qr_coords['x']:.3f}, {qr_coords['y']:.3f})")
+        self.logger.info(f"QR code at position {qr_grid_index}: ({qr_coords['x']:.1f}, {qr_coords['y']:.1f})")
 
-        # 5) Assign drones to positions based on recipe matrix (including leader)
+        # 5) Assign drones directly based on items_needed (без recipe matrix)
         assignments = []
         leader_assignment = None
         
-        qr_row, qr_col = grid_index_to_row_col(qr_grid_index)
-        recipe_matrix = recipe_info['matrix']
-        
-        # Include leader in available drones list
+        # Получаем список всех дронов
         available_drones = [d.strip() for d in DRONE_LIST.split(',') if d.strip()] if DRONE_LIST else []
         all_drones = [self.drone_name] + available_drones  # Leader first
-        drone_idx = 0
         
-        self.logger.info("Building assignments based on recipe matrix:")
-        for row in range(3):
-            for col in range(3):
-                grid_index = row_col_to_grid_index(row, col)
-                required_item = recipe_matrix[row][col]
-                aruco_info = grid_positions[grid_index]
+        self.logger.info(f"Assigning {len(items_needed)} items to {len(all_drones)} available drones:")
+        
+        # Назначаем каждый элемент дрону на уникальную позицию
+        used_positions = {qr_grid_index}  # QR позиция уже занята
+        
+        for i, item in enumerate(items_needed):
+            if i < len(all_drones):
+                drone_name = all_drones[i]
+                color = pick_color_for_item(item)
                 
-                if grid_index == qr_grid_index:
-                    # QR position - this is where the QR code was found
-                    self.logger.info(f"  Grid[{row},{col}] = QR CODE LOCATION (ArUco {aruco_info['aruco_id']}) - SKIPPED")
-                    continue
-                elif required_item and required_item in ['S', 'D']:
-                    # This cell needs an item
-                    if drone_idx < len(all_drones):
-                        drone_name = all_drones[drone_idx]
-                        color = pick_color_for_item(required_item)
-                        
-                        assignment = {
-                'type': 'assign',
-                            'to': drone_name,
-                            'cell': grid_index,
-                            'item': required_item,
-                            'target': {
-                                'x': aruco_info['x'], 
-                                'y': aruco_info['y'], 
-                                'z': self.target_z
-                            },
-                'color': color,
-                            'recipe_id': recipe_id,
-                            'qr_grid_index': qr_grid_index,
-                            'aruco_id': aruco_info['aruco_id']
-                        }
-                        
-                        if drone_name == self.drone_name:
-                            # This is leader's assignment - handle separately
-                            leader_assignment = assignment
-                            self.logger.info(f"  Grid[{row},{col}] = {required_item} (ArUco {aruco_info['aruco_id']}) -> LEADER")
-                        else:
-                            # Regular follower assignment
-                            assignments.append(assignment)
-                            self.logger.info(f"  Grid[{row},{col}] = {required_item} (ArUco {aruco_info['aruco_id']}) -> {drone_name}")
-                        drone_idx += 1
+                # Находим свободную позицию (не QR позицию и не использованную)
+                target_position = None
+                pos_idx = None
+                for pos_idx in range(9):  # 0-8
+                    if pos_idx not in used_positions:  # Пропускаем занятые позиции
+                        target_position = grid_positions[pos_idx]
+                        used_positions.add(pos_idx)  # Помечаем как занятую
+                        break
+                
+                if target_position:
+                    assignment = {
+                        'type': 'assign',
+                        'to': drone_name,
+                        'cell': pos_idx,
+                        'item': item,
+                        'target': {
+                            'x': target_position['x'], 
+                            'y': target_position['y'], 
+                            'z': self.target_z
+                        },
+                        'color': color,
+                        'recipe_id': recipe_id,
+                        'qr_grid_index': qr_grid_index,
+                        'aruco_id': target_position.get('aruco_id')
+                    }
+                    
+                    if drone_name == self.drone_name:
+                        # This is leader's assignment
+                        leader_assignment = assignment
+                        self.logger.info(f"  Item {i+1}: {item} -> LEADER at position {pos_idx} ({target_position['x']:.1f}, {target_position['y']:.1f})")
                     else:
-                        self.logger.warning(f"  Grid[{row},{col}] = {required_item} -> NO DRONE AVAILABLE!")
+                        # Regular follower assignment
+                        assignments.append(assignment)
+                        self.logger.info(f"  Item {i+1}: {item} -> {drone_name} at position {pos_idx} ({target_position['x']:.1f}, {target_position['y']:.1f})")
                 else:
-                    # Empty cell
-                    self.logger.info(f"  Grid[{row},{col}] = EMPTY (ArUco {aruco_info['aruco_id']})")
+                    self.logger.error(f"No available position for item {i+1}: {item}")
+            else:
+                self.logger.warning(f"  Item {i+1}: {item} -> NO DRONE AVAILABLE!")
 
         # 6) Send assignments to followers with reliable messaging
         self.logger.info(f"Sending {len(assignments)} assignments to follower drones")
