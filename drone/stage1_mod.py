@@ -191,6 +191,7 @@ class Stage1Mod:
             {'x':  1.2, 'y': -1.5, 'z': target_z, 'speed': 0.4},
             {'x':  1.2, 'y':  1.5, 'z': target_z, 'speed': 0.4},
             {'x': -1.2, 'y':  1.5, 'z': target_z, 'speed': 0.4},
+            {'x': -1.2, 'y':  -1.5, 'z': target_z, 'speed': 0.4},
             # Return to center for stability before the next phase
             {'x':  0.0, 'y':  0.0, 'z': target_z, 'speed': 0.5},
         ]
