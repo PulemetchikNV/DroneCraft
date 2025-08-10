@@ -437,7 +437,7 @@ class Stage2:
     # ---- leader flow ----
     def _leader_run(self):
         """Логика лидера для Stage2"""
-        LEADER_Z = 1.0
+        LEADER_Z = 1.5
 
         self.logger.info("Starting Stage2 leader sequence")
         
