@@ -229,11 +229,33 @@ class Stage2:
             except Exception as e:
                 self.logger.warning(f"Failed to send ack via broadcast: {e}")
 
-        if cmd_type == 'assign' and target == self.drone_name:
+        # Обработка сокращённых команд
+        if (cmd_type == 'assign' or obj.get('t') == 'a') and target == self.drone_name:
             self.logger.info(f"Received ASSIGN command from leader: {obj}")
-            self._assigned_task = obj
+            # Преобразуем сокращённый формат в полный
+            if obj.get('t') == 'a':  # сокращённый формат
+                expanded_task = {
+                    'type': 'assign',
+                    'to': obj.get('to'),
+                    'cell': obj.get('c'),
+                    'item': obj.get('i'),
+                    'target': {
+                        'x': obj.get('x'),
+                        'y': obj.get('y'),
+                        'z': obj.get('z')
+                    },
+                    'color': {
+                        'r': obj.get('r', 255),
+                        'g': obj.get('g', 255),
+                        'b': obj.get('b', 255)
+                    },
+                    'aruco_id': obj.get('aid', '?')
+                }
+                self._assigned_task = expanded_task
+            else:
+                self._assigned_task = obj
             self._assign_event.set()
-        elif cmd_type == 'land':
+        elif cmd_type == 'land' or obj.get('t') == 'l':
             self.logger.info("Received LAND command from leader")
             self._land_event.set()
 
@@ -247,7 +269,7 @@ class Stage2:
         payload['msg_id'] = msg_id
 
         # Для команды assign делаем бесконечные попытки
-        is_assign_command = payload.get('type') == 'assign'
+        is_assign_command = payload.get('type') == 'assign' or payload.get('t') == 'a'
         max_attempts = float('inf') if is_assign_command else retries
 
         attempt = 0
@@ -450,23 +472,20 @@ class Stage2:
         # 6) Send assignments to followers with reliable messaging
         self.logger.info(f"Sending {len(assignments)} assignments to follower drones")
         for assignment in assignments:
-            # Используем полные ключи для надёжности
-            full_assignment = {
-                'type': 'assign',
+            # Сокращаем для экономии места (<125 символов)
+            short_assignment = {
+                't': 'a',  # type: assign
                 'to': assignment['to'],
-                'cell': assignment['cell'],
-                'item': assignment['item'],
-                'target': {
-                    'x': round(assignment['target']['x'], 3),
-                    'y': round(assignment['target']['y'], 3),
-                    'z': round(assignment['target']['z'], 2)
-                },
-                'color': assignment['color'],
-                'recipe_id': assignment['recipe_id'],
-                'qr_grid_index': assignment['qr_grid_index'],
-                'aruco_id': assignment['aruco_id']
+                'c': assignment['cell'],
+                'i': assignment['item'],
+                'x': round(assignment['target']['x'], 3),
+                'y': round(assignment['target']['y'], 3),
+                'z': round(assignment['target']['z'], 2),
+                'r': assignment['color']['r'],
+                'g': assignment['color']['g'],
+                'b': assignment['color']['b']
             }
-            success = self._broadcast_reliable(full_assignment)
+            success = self._broadcast_reliable(short_assignment)
             if not success:
                 self.logger.error(f"Failed to send assignment to {assignment['to']}. Aborting mission.")
                 return
@@ -509,12 +528,12 @@ class Stage2:
 
         # 9) Final formation check (optional visual indicator)
         self.logger.info("Sending final blink command")
-        self._broadcast_reliable({'type': 'blink', 'to': '*'})
+        self._broadcast_reliable({'t': 'b', 'to': '*'})
         
         # 10) Land all drones (leader last)
         self.logger.info("Sending LAND command to all drones")
         land_success = self._broadcast_reliable({
-            'type': 'land',
+            't': 'l',  # type: land
             'to': '*'
         })
         if not land_success:
