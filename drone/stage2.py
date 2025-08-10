@@ -8,7 +8,7 @@ import math
 
 # rospy fallback for local testing
 try:
-    import rospy
+import rospy
 except ImportError:
     # Mock rospy for local testing
     class MockRospy:
@@ -33,6 +33,39 @@ try:
 except Exception:
     SkyrosDrone = None
 
+
+# ArUco markers mapping for 3x3 crafting grid (from aruco_map_dronecraft_v2.txt)
+# Grid layout (row, col) -> ArUco ID and coordinates
+ARUCO_GRID = {
+    # Row 0 (top)
+    (0, 0): {'id': 68, 'x': -1.2500, 'y': -1.2500},  # Top-left
+    (0, 1): {'id': 69, 'x': -0.2500, 'y': -1.2500},  # Top-center  
+    (0, 2): {'id': 70, 'x':  0.7500, 'y': -1.2500},  # Top-right
+    # Row 1 (middle)
+    (1, 0): {'id': 71, 'x': -0.7500, 'y': -0.7500},  # Middle-left
+    (1, 1): {'id': 72, 'x':  0.2500, 'y': -0.7500},  # Middle-center
+    (1, 2): {'id': 73, 'x':  1.2500, 'y': -0.7500},  # Middle-right
+    # Row 2 (bottom)
+    (2, 0): {'id': 74, 'x': -1.2500, 'y': -0.2500},  # Bottom-left
+    (2, 1): {'id': 75, 'x': -0.2500, 'y': -0.2500},  # Bottom-center
+    (2, 2): {'id': 76, 'x':  0.7500, 'y': -0.2500},  # Bottom-right
+}
+
+# Alternative grid (if needed)
+ARUCO_GRID_ALT = {
+    # Row 0
+    (0, 0): {'id': 77, 'x': -0.7500, 'y':  0.2500},
+    (0, 1): {'id': 78, 'x':  0.2500, 'y':  0.2500},
+    (0, 2): {'id': 79, 'x':  1.2500, 'y':  0.2500},
+    # Row 1
+    (1, 0): {'id': 80, 'x': -1.2500, 'y':  0.7500},
+    (1, 1): {'id': 81, 'x': -0.2500, 'y':  0.7500},
+    (1, 2): {'id': 82, 'x':  0.7500, 'y':  0.7500},
+    # Row 2
+    (2, 0): {'id': 83, 'x': -0.7500, 'y':  1.2500},
+    (2, 1): {'id': 84, 'x':  0.2500, 'y':  1.2500},
+    (2, 2): {'id': 85, 'x':  1.2500, 'y':  1.2500},
+}
 
 # Crafting recipes as 3x3 matrices
 CRAFTING_RECIPES = {
@@ -63,40 +96,49 @@ CRAFTING_RECIPES = {
 }
 
 def grid_index_to_row_col(index):
+    """Convert grid index (0-8) to (row, col) coordinates"""
     return index // 3, index % 3
 
 def row_col_to_grid_index(row, col):
+    """Convert (row, col) to grid index (0-8)"""
     return row * 3 + col
 
-def build_grid_positions(start_xy, start_index, cell_size):
-    sx, sy = start_xy
-    row, col = grid_index_to_row_col(start_index)
-    # Топ-левый центр сетки 3x3
-    origin_x = sx - (col * cell_size)
-    origin_y = sy - (row * cell_size)
+def get_aruco_coordinates(grid_type='main'):
+    """
+    Get ArUco marker coordinates for the 3x3 grid
+    Args:
+        grid_type: 'main' or 'alt' to choose which grid to use
+    Returns:
+        dict: {grid_index: {'x': x, 'y': y, 'aruco_id': id}}
+    """
+    grid_map = ARUCO_GRID if grid_type == 'main' else ARUCO_GRID_ALT
     positions = {}
-    n = 0
-    for r in range(3):
-        for c in range(3):
-            x = origin_x + c * cell_size
-            y = origin_y + r * cell_size
-            positions[n] = (x, y)
-            n += 1
+    
+    for row in range(3):
+        for col in range(3):
+            grid_index = row_col_to_grid_index(row, col)
+            aruco_info = grid_map[(row, col)]
+            positions[grid_index] = {
+                'x': aruco_info['x'],
+                'y': aruco_info['y'], 
+                'aruco_id': aruco_info['id']
+            }
+    
     return positions
 
 def parse_recipe_code(code):
     """
-    Parse QR recipe code like '02SSDD'
-    Returns: (recipe_id, qr_position, items_needed)
+    Parse QR recipe code like '025SDD'
+    Returns: (recipe_id, qr_grid_index, items_needed)
     """
     if len(code) < 6:
         raise ValueError(f"Recipe code too short: {code}")
     
     recipe_id = int(code[0])
-    qr_position = int(code[1])
+    qr_grid_index = int(code[1])  # This is the index in our 3x3 grid (0-8)
     items_needed = list(code[2:])
     
-    return recipe_id, qr_position, items_needed
+    return recipe_id, qr_grid_index, items_needed
 
 def pick_color_for_item(item):
     """Pick LED color based on item type"""
@@ -118,7 +160,7 @@ class Stage2:
         
         # Flight controller
         self.fc = FlightController(drone_name=self.drone_name, logger=self.logger)
-        
+
         # Role determination
         self.is_leader = self.drone_name == LEADER_DRONE
         self.logger.info(f"Stage2 Role: {'LEADER' if self.is_leader else 'FOLLOWER'}")
@@ -219,11 +261,11 @@ class Stage2:
 
             self.logger.info(f"Broadcasting (attempt {attempt}): {payload}")
             
-            try:
-                msg = json.dumps(payload)
+        try:
+            msg = json.dumps(payload)
                 self.swarm.broadcast_custom_message(msg)
-            except Exception as e:
-                self.logger.warning(f"Broadcast failed: {e}")
+        except Exception as e:
+            self.logger.warning(f"Broadcast failed: {e}")
                 time.sleep(timeout)
                 continue
 
@@ -237,7 +279,7 @@ class Stage2:
             
             self.logger.warning(f"No ACK for {msg_id} (attempt {attempt}) - retrying...")
 
-        return False
+            return False
 
     # ---- leader flow ----
     def _leader_run(self):
@@ -313,80 +355,128 @@ class Stage2:
 
         # 3) Parse recipe and determine crafting grid
         try:
-            recipe_id, qr_position, items_needed = parse_recipe_code(recipe_code)
+            recipe_id, qr_grid_index, items_needed = parse_recipe_code(recipe_code)
             recipe_info = CRAFTING_RECIPES.get(recipe_id)
             if not recipe_info:
                 raise ValueError(f"Unknown recipe ID: {recipe_id}")
             
             self.logger.info(f"Crafting: {recipe_info['name']} (recipe {recipe_id})")
-            self.logger.info(f"QR position: {qr_position}, Items needed: {items_needed}")
+            self.logger.info(f"QR grid position: {qr_grid_index}, Items needed: {items_needed}")
             
         except Exception as e:
             self.logger.error(f"Failed to parse recipe '{recipe_code}': {e}")
             return
 
-        # 4) Get current position as grid origin
-        try:
-            telem = self.fc.get_telemetry(frame_id='aruco_map')
-            sx, sy = telem.x, telem.y
-        except Exception:
-            sx, sy = 0.0, 0.0
+        # 4) Get ArUco grid coordinates (use main grid by default)
+        grid_type = os.getenv('ARUCO_GRID_TYPE', 'main')  # 'main' or 'alt'
+        grid_positions = get_aruco_coordinates(grid_type)
         
-        self.logger.info(f"Grid origin at: x={sx:.2f} y={sy:.2f} (aruco_map)")
+        self.logger.info(f"Using {grid_type} ArUco grid for crafting")
+        qr_coords = grid_positions[qr_grid_index]
+        self.logger.info(f"QR code is at ArUco {qr_coords['aruco_id']}: ({qr_coords['x']:.3f}, {qr_coords['y']:.3f})")
 
-        # 5) Build grid positions
-        grid = build_grid_positions((sx, sy), qr_position, self.cell_size)
-
-        # 6) Assign drones to positions based on recipe matrix
+        # 5) Assign drones to positions based on recipe matrix (including leader)
         assignments = []
+        leader_assignment = None
         
-        # QR code position is already occupied
-        qr_row, qr_col = grid_index_to_row_col(qr_position)
+        qr_row, qr_col = grid_index_to_row_col(qr_grid_index)
         recipe_matrix = recipe_info['matrix']
         
-        # Find all needed positions from recipe matrix
+        # Include leader in available drones list
         available_drones = [d.strip() for d in DRONE_LIST.split(',') if d.strip()] if DRONE_LIST else []
+        all_drones = [self.drone_name] + available_drones  # Leader first
         drone_idx = 0
         
+        self.logger.info("Building assignments based on recipe matrix:")
         for row in range(3):
             for col in range(3):
-                cell_index = row_col_to_grid_index(row, col)
+                grid_index = row_col_to_grid_index(row, col)
                 required_item = recipe_matrix[row][col]
+                aruco_info = grid_positions[grid_index]
                 
-                if cell_index == qr_position:
-                    # QR position - assign to leader (already there)
+                if grid_index == qr_grid_index:
+                    # QR position - this is where the QR code was found
+                    self.logger.info(f"  Grid[{row},{col}] = QR CODE LOCATION (ArUco {aruco_info['aruco_id']}) - SKIPPED")
                     continue
                 elif required_item and required_item in ['S', 'D']:
                     # This cell needs an item
-                    if drone_idx < len(available_drones):
-                        drone_name = available_drones[drone_idx]
-                        tx, ty = grid[cell_index]
+                    if drone_idx < len(all_drones):
+                        drone_name = all_drones[drone_idx]
                         color = pick_color_for_item(required_item)
                         
                         assignment = {
                             'type': 'assign',
                             'to': drone_name,
-                            'cell': cell_index,
+                            'cell': grid_index,
                             'item': required_item,
-                            'target': {'x': tx, 'y': ty, 'z': self.target_z},
+                            'target': {
+                                'x': aruco_info['x'], 
+                                'y': aruco_info['y'], 
+                                'z': self.target_z
+                            },
                             'color': color,
                             'recipe_id': recipe_id,
-                            'qr_position': qr_position
+                            'qr_grid_index': qr_grid_index,
+                            'aruco_id': aruco_info['aruco_id']
                         }
-                        assignments.append(assignment)
+                        
+                        if drone_name == self.drone_name:
+                            # This is leader's assignment - handle separately
+                            leader_assignment = assignment
+                            self.logger.info(f"  Grid[{row},{col}] = {required_item} (ArUco {aruco_info['aruco_id']}) -> LEADER")
+                        else:
+                            # Regular follower assignment
+                            assignments.append(assignment)
+                            self.logger.info(f"  Grid[{row},{col}] = {required_item} (ArUco {aruco_info['aruco_id']}) -> {drone_name}")
                         drone_idx += 1
+                    else:
+                        self.logger.warning(f"  Grid[{row},{col}] = {required_item} -> NO DRONE AVAILABLE!")
+                else:
+                    # Empty cell
+                    self.logger.info(f"  Grid[{row},{col}] = EMPTY (ArUco {aruco_info['aruco_id']})")
 
-        # 7) Send assignments with reliable messaging
-        self.logger.info(f"Sending {len(assignments)} assignments to drones")
+        # 6) Send assignments to followers with reliable messaging
+        self.logger.info(f"Sending {len(assignments)} assignments to follower drones")
         for assignment in assignments:
             success = self._broadcast_reliable(assignment)
             if not success:
                 self.logger.error(f"Failed to send assignment to {assignment['to']}. Aborting mission.")
                 return
-            self.logger.info(f"✓ Assigned {assignment['item']} -> {assignment['to']} at cell {assignment['cell']}")
+            aruco_id = assignment['aruco_id']
+            coords = assignment['target']
+            self.logger.info(f"✓ Assigned {assignment['item']} -> {assignment['to']} at ArUco {aruco_id} ({coords['x']:.3f}, {coords['y']:.3f})")
 
-        # 8) Wait for drones to get into position
-        self.logger.info("Waiting for drones to reach positions...")
+        # 7) Leader moves to its own position
+        if leader_assignment:
+            self.logger.info("Leader moving to its assigned position in the recipe")
+            target = leader_assignment['target']
+            color = leader_assignment['color']
+            aruco_id = leader_assignment['aruco_id']
+            item = leader_assignment['item']
+            
+            # Set LED color for leader's block type
+            self.fc.set_led(effect='blink', **color)
+            self.logger.info(f"Leader LED set to {item} color: {color}")
+            
+            # Navigate to position
+            self.logger.info(f"Leader navigating to ArUco {aruco_id} at ({target['x']:.3f}, {target['y']:.3f})")
+            self.fc.navigate_wait(
+                x=target['x'], 
+                y=target['y'], 
+                z=target['z'], 
+                speed=self.speed, 
+                frame_id='aruco_map', 
+                tolerance=0.08
+            )
+            
+            # Set solid color after arrival
+            self.fc.set_led(**color)
+            self.logger.info(f"Leader arrived at ArUco {aruco_id} representing '{item}' block")
+        else:
+            self.logger.warning("Leader has no assignment in this recipe - staying at current position")
+
+        # 8) Wait for all drones to get into position
+        self.logger.info("Waiting for all drones to reach their positions...")
         time.sleep(8.0)
 
         # 9) Final formation check (optional visual indicator)
@@ -402,7 +492,7 @@ class Stage2:
         # Wait for followers to start landing
         self.logger.info("Waiting for followers to begin landing...")
         time.sleep(5.0)
-        
+
         # Leader lands last
         self.logger.info("Leader landing (last)")
         try:
@@ -433,12 +523,13 @@ class Stage2:
         color = task.get('color', {'r': 255, 'g': 255, 'b': 255})
         cell = task.get('cell', 0)
         recipe_id = task.get('recipe_id', 0)
+        aruco_id = task.get('aruco_id', '?')
         
         tx = float(target.get('x', 0.0))
         ty = float(target.get('y', 0.0))
         tz = float(target.get('z', self.target_z))
 
-        self.logger.info(f"Assignment received: {item} item at cell {cell} -> ({tx:.2f}, {ty:.2f}, {tz:.2f})")
+        self.logger.info(f"Assignment received: {item} item at ArUco {aruco_id} -> ({tx:.3f}, {ty:.3f}, {tz:.2f})")
         
         # Проверяем совместимость с возможностями дрона
         if self.capability not in ['ANY', item]:
@@ -458,11 +549,11 @@ class Stage2:
         self.logger.info(f"LED set to {item} color: {color}")
 
         # Навигация к назначенной ячейке
-        self.logger.info(f"Navigating to assigned cell {cell} at ({tx:.2f}, {ty:.2f}, {tz:.2f})")
+        self.logger.info(f"Navigating to ArUco {aruco_id} at ({tx:.3f}, {ty:.3f}, {tz:.2f})")
         self.fc.navigate_wait(x=tx, y=ty, z=tz, speed=self.speed, frame_id='aruco_map', tolerance=0.08)
 
         # Подтверждение прибытия
-        self.logger.info(f"Arrived at cell {cell} representing '{item}' block")
+        self.logger.info(f"Arrived at ArUco {aruco_id} representing '{item}' block")
         
         # Установить постоянный цвет после прибытия
         self.fc.set_led(**color)
@@ -507,7 +598,7 @@ class Stage2:
                     self.swarm.stop()
                     self.logger.info("Skyros link stopped")
             except Exception:
-                pass
+                pass 
 
 
 # Обратная совместимость для импорта

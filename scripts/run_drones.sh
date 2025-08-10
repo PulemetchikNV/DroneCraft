@@ -98,14 +98,6 @@ run_on_drone() {
     local commands="
         echo 'Connected to $drone_name';
         cd $DRONE_DIR || { echo 'Directory not found: $DRONE_DIR'; exit 1; };
-        
-        # Source ROS environment. This is critical for non-interactive SSH sessions.
-        if [ -f /opt/ros/noetic/setup.bash ]; then
-            source /opt/ros/noetic/setup.bash
-            echo 'ROS environment sourced.';
-        else
-            echo 'Warning: ROS setup script not found. Proceeding without it.';
-        fi
 
         echo 'Current directory:' \$(pwd);
         echo 'Setting DRONE_NAME environment variable to: $drone_name';
@@ -113,7 +105,9 @@ run_on_drone() {
         echo 'Starting script: $SCRIPT_NAME';
         echo 'Command: DRONE_NAME=$drone_name $PYTHON_CMD ./drone/$SCRIPT_NAME';
         echo '--- Script Output ---';
-        DRONE_NAME='$drone_name' $PYTHON_CMD ./drone/$SCRIPT_NAME;
+        export DRONE_NAME='$drone_name';
+        $PYTHON_CMD ./drone/$SCRIPT_NAME;
+        
         echo '--- Script Finished ---';
         echo 'Execution completed for $drone_name';
     "
