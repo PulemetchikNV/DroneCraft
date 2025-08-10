@@ -288,14 +288,16 @@ class Stage2:
     # ---- leader flow ----
     def _leader_run(self):
         """Логика лидера для Stage2"""
+        LEADER_Z = 2.0
+
         self.logger.info("Starting Stage2 leader sequence")
         
         # 1) Взлет лидера
         self.logger.info(f"Leader takeoff to {self.target_z}m")
         if 'speed' in self.fc.takeoff.__code__.co_varnames:
-            self.fc.takeoff(z=self.target_z, delay=2, speed=0.5)
+            self.fc.takeoff(z=LEADER_Z, delay=2, speed=0.5)
         else:
-            self.fc.takeoff(z=self.target_z, delay=2, time_spam=3.0, time_warm=2, time_up=1.0)
+            self.fc.takeoff(z=LEADER_Z, delay=2, time_spam=3.0, time_warm=2, time_up=1.0)
 
         time.sleep(3)
         
@@ -304,12 +306,12 @@ class Stage2:
 
         # Waypoints form a rectangle for QR search
         waypoints = [
-            {'x': -1.2, 'y': -1.5, 'z': self.target_z, 'speed': 0.4},
-            {'x':  1.2, 'y': -1.5, 'z': self.target_z, 'speed': 0.4},
-            {'x':  1.2, 'y':  1.5, 'z': self.target_z, 'speed': 0.4},
-            {'x': -1.2, 'y':  1.5, 'z': self.target_z, 'speed': 0.4},
+            {'x': -1.2, 'y': -1.5, 'z': LEADER_Z, 'speed': 0.4},
+            {'x':  1.2, 'y': -1.5, 'z': LEADER_Z, 'speed': 0.4},
+            {'x':  1.2, 'y':  1.5, 'z': LEADER_Z, 'speed': 0.4},
+            {'x': -1.2, 'y':  1.5, 'z': LEADER_Z, 'speed': 0.4},
             # Return to center for stability
-            {'x':  0.0, 'y':  0.0, 'z': self.target_z, 'speed': 0.5},
+            {'x':  0.0, 'y':  0.0, 'z': LEADER_Z, 'speed': 0.5},
         ]
 
         recipe_code = None
