@@ -315,6 +315,10 @@ class Stage2:
         self._received_acks = set()
         self._ack_lock = threading.Lock()
 
+        # Landing coordination tracking (leader only)
+        self._expected_followers: set[str] = set()
+        self._landed_from: set[str] = set()
+
     # ---- swarm messaging ----
     def _on_custom_message(self, message: str):
         """Обработчик сообщений от лидера и подтверждений"""
@@ -382,6 +386,13 @@ class Stage2:
         elif cmd_type == 'land' or obj.get('t') == 'l':
             self.logger.info("Received LAND command from leader")
             self._land_event.set()
+        elif cmd_type == 'landed' or obj.get('t') == 'd':
+            # follower informs leader about successful landing
+            if self.is_leader:
+                who = obj.get('from') or obj.get('f')
+                if who:
+                    self._landed_from.add(who)
+                    self.logger.info(f"Follower reported landed: {who} ({len(self._landed_from)}/{len(self._expected_followers)})")
 
     def _broadcast_reliable(self, payload, retries=3, timeout=0.5):
         """Надежная отправка сообщения с ожиданием подтверждения."""
@@ -625,6 +636,11 @@ class Stage2:
             coords = assignment['target']
             self.logger.info(f"✓ Assigned {assignment['item']} -> {assignment['to']} at ArUco {aruco_id} ({coords['x']:.3f}, {coords['y']:.3f})")
 
+        # Track expected followers for landing coordination
+        if self.is_leader:
+            self._expected_followers = {a['to'] for a in assignments}
+            self._landed_from.clear()
+
         # 7) Leader moves to its own position
         if leader_assignment:
             self.logger.info("Leader moving to its assigned position in the recipe")
@@ -671,9 +687,20 @@ class Stage2:
         if not land_success:
             self.logger.warning("Failed to send LAND command, but continuing with leader landing")
 
-        # Wait for followers to start landing
-        self.logger.info("Waiting for followers to begin landing...")
-        time.sleep(5.0)
+        # Wait for followers to finish landing (or timeout)
+        if self.is_leader and self._expected_followers:
+            self.logger.info(f"Waiting for followers to land: {sorted(self._expected_followers)}")
+            wait_start = time.time()
+            LAND_TIMEOUT = 25.0
+            while not rospy.is_shutdown():
+                if self._expected_followers.issubset(self._landed_from):
+                    self.logger.info("All followers reported landed")
+                    break
+                if time.time() - wait_start > LAND_TIMEOUT:
+                    pending = sorted(self._expected_followers - self._landed_from)
+                    self.logger.warning(f"Landing wait timeout. No reports from: {pending}")
+                    break
+                time.sleep(0.5)
 
         # Leader lands last
         self.logger.info("Leader landing (last)")
@@ -757,6 +784,14 @@ class Stage2:
             self.fc.land(prl_aruco="aruco_map")
         
         self.logger.info("Stage2 follower sequence completed")
+
+        # Notify leader about successful landing (best-effort)
+        if self.swarm:
+            try:
+                msg = json.dumps({'t': 'd', 'from': self.drone_name})
+                self.swarm.broadcast_custom_message(msg)
+            except Exception:
+                pass
 
     def run(self):
         """Основной метод запуска Stage2"""
