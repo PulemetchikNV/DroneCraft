@@ -313,6 +313,7 @@ class Stage2:
             {'x':  1.2, 'y': -1.5, 'z': LEADER_Z, 'speed': 0.4},
             {'x':  1.2, 'y':  1.5, 'z': LEADER_Z, 'speed': 0.4},
             {'x': -1.2, 'y':  1.5, 'z': LEADER_Z, 'speed': 0.4},
+            {'x': -1.2, 'y':  -1.5, 'z': LEADER_Z, 'speed': 0.4},
             # Return to center for stability
             {'x':  0.0, 'y':  0.0, 'z': LEADER_Z, 'speed': 0.5},
         ]
