@@ -1,0 +1,23 @@
+Drone name from env: drone6
+Running Stage2 on drone: drone6
+[drone6] 11:27:47 - INFO - Stage2 Role: FOLLOWER
+[drone6] 11:27:47 - INFO - Drone capability: D
+[drone6] 11:27:47 - INFO - Custom message callback set
+[drone6] 11:27:48 - INFO - Drone drone6 started successfully
+[drone6] 11:27:48 - INFO - Stage2 follower waiting for assignment...
+[drone6] 11:27:50 - INFO - Discovered drone_234 via telemetry at (-0.2, 1.3, 0.0)
+[drone6] 11:28:02 - INFO - Discovered drone_156 via telemetry at (-1.2, 1.3, 0.0)
+[drone6] 11:28:10 - INFO - Drone_234 expired (not seen for 5.0s)
+[drone6] 11:28:11 - INFO - Discovered drone_234 via telemetry at (-0.2, 1.3, 0.0)
+[drone6] 11:28:22 - INFO - Drone_234 expired (not seen for 5.0s)
+[drone6] 11:28:24 - INFO - Discovered drone_234 via telemetry at (-0.2, 1.3, 0.0)
+[drone6] 11:28:36 - INFO - Drone_234 expired (not seen for 5.0s)
+[drone6] 11:28:40 - INFO - Discovered drone_234 via telemetry at (-0.2, 1.3, 0.0)
+[drone6] 11:28:46 - INFO - Drone_234 expired (not seen for 5.0s)
+[drone6] 11:28:47 - INFO - Discovered drone_234 via telemetry at (-0.2, 1.3, 0.0)
+[drone6] 11:28:58 - INFO - Drone_234 expired (not seen for 5.0s)
+[drone6] 11:28:58 - INFO - Discovered drone_234 via telemetry at (-0.2, 1.3, 0.0)
+[drone6] 11:29:10 - INFO - Drone_156 expired (not seen for 5.0s)
+^C[drone6] 11:29:11 - WARNING - No assignment received, exiting
+[drone6] 11:29:11 - INFO - Drone drone6 stopped
+[drone6] 11:29:11 - INFO - Skyros link stopped

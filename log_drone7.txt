@@ -1,0 +1,411 @@
+Drone name from env: drone7
+Running Stage2 on drone: drone7
+[drone7] 11:27:59 - INFO - Stage2 Role: LEADER
+[drone7] 11:27:59 - INFO - Drone capability: ANY
+[drone7] 11:27:59 - INFO - Custom message callback set
+[drone7] 11:27:59 - INFO - Drone drone7 started successfully
+[drone7] 11:27:59 - INFO - Starting Stage2 leader sequence
+[drone7] 11:27:59 - INFO - Leader takeoff to 2.0m
+[drone7] 11:27:59 - INFO - Taking off to z=2.00
+[drone7] 11:28:00 - INFO - Discovered drone_189 via telemetry at (0.8, 1.3, 0.0)
+[drone7] 11:28:01 - INFO - Discovered drone_234 via telemetry at (-0.2, 1.3, 0.0)
+[drone7] 11:28:03 - INFO - Takeoff done
+[drone7] 11:28:06 - INFO - Starting QR code search pattern...
+[drone7] 11:28:06 - INFO - Navigating to waypoint 1/6: {'x': -1.2, 'y': -1.5, 'z': 2.0, 'speed': 0.4}
+[drone7] 11:28:07 - INFO - QR: ничего не найдено
+[drone7] 11:28:07 - INFO - QR: ничего не найдено
+[drone7] 11:28:07 - INFO - QR: ничего не найдено
+[drone7] 11:28:07 - INFO - QR: ничего не найдено
+[drone7] 11:28:08 - INFO - QR: ничего не найдено
+[drone7] 11:28:08 - INFO - QR: ничего не найдено
+[drone7] 11:28:08 - INFO - QR: ничего не найдено
+[drone7] 11:28:09 - INFO - QR: ничего не найдено
+[drone7] 11:28:09 - INFO - QR: ничего не найдено
+[drone7] 11:28:09 - INFO - QR: ничего не найдено
+[drone7] 11:28:10 - INFO - QR: ничего не найдено
+[drone7] 11:28:10 - INFO - QR: ничего не найдено
+[drone7] 11:28:10 - INFO - QR: ничего не найдено
+[drone7] 11:28:11 - INFO - QR: ничего не найдено
+[drone7] 11:28:11 - INFO - QR: ничего не найдено
+[drone7] 11:28:11 - INFO - QR: ничего не найдено
+[drone7] 11:28:12 - INFO - QR: ничего не найдено
+[drone7] 11:28:12 - INFO - QR: ничего не найдено
+[drone7] 11:28:12 - INFO - QR: ничего не найдено
+[drone7] 11:28:13 - INFO - QR: ничего не найдено
+[drone7] 11:28:13 - INFO - QR: ничего не найдено
+[drone7] 11:28:13 - INFO - QR: ничего не найдено
+[drone7] 11:28:14 - INFO - QR: ничего не найдено
+[drone7] 11:28:14 - INFO - QR: ничего не найдено
+[drone7] 11:28:14 - INFO - Arrived at waypoint 1
+[drone7] 11:28:14 - INFO - Navigating to waypoint 2/6: {'x': 1.2, 'y': -1.5, 'z': 2.0, 'speed': 0.4}
+[drone7] 11:28:15 - INFO - QR: ничего не найдено
+[drone7] 11:28:15 - INFO - QR: ничего не найдено
+[drone7] 11:28:15 - INFO - QR: ничего не найдено
+[drone7] 11:28:16 - INFO - QR: ничего не найдено
+[drone7] 11:28:16 - INFO - QR: ничего не найдено
+[drone7] 11:28:16 - INFO - QR: ничего не найдено
+[drone7] 11:28:17 - INFO - QR: ничего не найдено
+[drone7] 11:28:17 - INFO - QR: ничего не найдено
+[drone7] 11:28:17 - INFO - QR: ничего не найдено
+[drone7] 11:28:18 - INFO - QR: ничего не найдено
+[drone7] 11:28:18 - INFO - QR: ничего не найдено
+[drone7] 11:28:18 - INFO - QR: ничего не найдено
+[drone7] 11:28:18 - INFO - QR: ничего не найдено
+[drone7] 11:28:19 - INFO - QR: ничего не найдено
+[drone7] 11:28:19 - INFO - QR: ничего не найдено
+[drone7] 11:28:19 - INFO - QR: ничего не найдено
+[drone7] 11:28:20 - INFO - QR: ничего не найдено
+[drone7] 11:28:20 - INFO - QR: ничего не найдено
+[drone7] 11:28:21 - INFO - QR: ничего не найдено
+[drone7] 11:28:21 - INFO - Arrived at waypoint 2
+[drone7] 11:28:21 - INFO - Navigating to waypoint 3/6: {'x': 1.2, 'y': 1.5, 'z': 2.0, 'speed': 0.4}
+[drone7] 11:28:21 - INFO - QR: ничего не найдено
+[drone7] 11:28:21 - INFO - Drone_234 expired (not seen for 5.0s)
+[drone7] 11:28:21 - INFO - QR: ничего не найдено
+[drone7] 11:28:22 - INFO - Discovered drone_234 via telemetry at (-0.2, 1.3, 0.0)
+[drone7] 11:28:22 - INFO - QR: ничего не найдено
+[drone7] 11:28:22 - INFO - QR: ничего не найдено
+[drone7] 11:28:22 - INFO - QR: ничего не найдено
+[drone7] 11:28:23 - INFO - QR: ничего не найдено
+[drone7] 11:28:23 - INFO - QR: ничего не найдено
+[drone7] 11:28:23 - INFO - QR: ничего не найдено
+[drone7] 11:28:24 - INFO - QR: ничего не найдено
+[drone7] 11:28:24 - INFO - QR: ничего не найдено
+[drone7] 11:28:24 - INFO - QR: ничего не найдено
+[drone7] 11:28:25 - INFO - QR: ничего не найдено
+[drone7] 11:28:25 - INFO - QR: ничего не найдено
+[drone7] 11:28:25 - INFO - QR: ничего не найдено
+[drone7] 11:28:26 - INFO - QR: ничего не найдено
+[drone7] 11:28:26 - INFO - QR: ничего не найдено
+[drone7] 11:28:26 - INFO - QR: ничего не найдено
+[drone7] 11:28:27 - INFO - QR: ничего не найдено
+[drone7] 11:28:27 - INFO - QR: ничего не найдено
+[drone7] 11:28:27 - INFO - QR: ничего не найдено
+[drone7] 11:28:27 - INFO - Drone_234 expired (not seen for 5.0s)
+[drone7] 11:28:28 - INFO - QR: ничего не найдено
+[drone7] 11:28:28 - INFO - QR: ничего не найдено
+[drone7] 11:28:28 - INFO - QR: ничего не найдено
+[drone7] 11:28:28 - INFO - Discovered drone_234 via telemetry at (-0.2, 1.3, 0.0)
+[drone7] 11:28:29 - INFO - QR: ничего не найдено
+[drone7] 11:28:29 - INFO - Arrived at waypoint 3
+[drone7] 11:28:29 - INFO - Navigating to waypoint 4/6: {'x': -1.2, 'y': 1.5, 'z': 2.0, 'speed': 0.4}
+[drone7] 11:28:29 - INFO - QR: ничего не найдено
+[drone7] 11:28:29 - INFO - QR: ничего не найдено
+[drone7] 11:28:30 - INFO - QR: ничего не найдено
+[drone7] 11:28:30 - INFO - QR: ничего не найдено
+[drone7] 11:28:30 - INFO - QR: ничего не найдено
+[drone7] 11:28:31 - INFO - QR: ничего не найдено
+[drone7] 11:28:31 - INFO - QR: ничего не найдено
+[drone7] 11:28:31 - INFO - QR: ничего не найдено
+[drone7] 11:28:32 - INFO - QR: ничего не найдено
+[drone7] 11:28:32 - INFO - QR: ничего не найдено
+[drone7] 11:28:32 - INFO - QR: ничего не найдено
+[drone7] 11:28:33 - INFO - QR: ничего не найдено
+[drone7] 11:28:33 - INFO - QR: ничего не найдено
+[drone7] 11:28:33 - INFO - QR: ничего не найдено
+[drone7] 11:28:34 - INFO - QR: ничего не найдено
+[drone7] 11:28:34 - INFO - QR: ничего не найдено
+[drone7] 11:28:34 - INFO - QR: ничего не найдено
+[drone7] 11:28:35 - INFO - QR: ничего не найдено
+[drone7] 11:28:35 - INFO - QR: ничего не найдено
+[drone7] 11:28:35 - INFO - QR: ничего не найдено
+[drone7] 11:28:35 - INFO - Arrived at waypoint 4
+[drone7] 11:28:35 - INFO - Navigating to waypoint 5/6: {'x': -1.2, 'y': -1.5, 'z': 2.0, 'speed': 0.4}
+[drone7] 11:28:36 - INFO - QR: ничего не найдено
+[drone7] 11:28:36 - INFO - QR: ничего не найдено
+[drone7] 11:28:37 - INFO - QR: ничего не найдено
+[drone7] 11:28:37 - INFO - QR: ничего не найдено
+[drone7] 11:28:37 - INFO - QR: ничего не найдено
+[drone7] 11:28:38 - INFO - QR: ничего не найдено
+[drone7] 11:28:38 - INFO - QR: ничего не найдено
+[drone7] 11:28:38 - INFO - QR: ничего не найдено
+[drone7] 11:28:39 - INFO - QR: ничего не найдено
+[drone7] 11:28:39 - INFO - QR: ничего не найдено
+[drone7] 11:28:39 - INFO - QR: ничего не найдено
+[drone7] 11:28:39 - INFO - QR: ничего не найдено
+[drone7] 11:28:40 - INFO - QR: ничего не найдено
+[drone7] 11:28:40 - INFO - QR: ничего не найдено
+[drone7] 11:28:40 - INFO - QR: ничего не найдено
+[drone7] 11:28:41 - INFO - QR: ничего не найдено
+[drone7] 11:28:41 - INFO - QR: ничего не найдено
+[drone7] 11:28:41 - INFO - QR: ничего не найдено
+[drone7] 11:28:42 - INFO - QR: ничего не найдено
+[drone7] 11:28:42 - INFO - QR: ничего не найдено
+[drone7] 11:28:42 - INFO - QR: ничего не найдено
+[drone7] 11:28:43 - INFO - QR: ничего не найдено
+[drone7] 11:28:43 - INFO - QR: ничего не найдено
+[drone7] 11:28:43 - INFO - QR: ничего не найдено
+[drone7] 11:28:44 - INFO - Arrived at waypoint 5
+[drone7] 11:28:44 - INFO - Navigating to waypoint 6/6: {'x': 0.0, 'y': 0.0, 'z': 2.0, 'speed': 0.5}
+[drone7] 11:28:44 - WARNING - QR: таймаут ожидания результата
+[drone7] 11:28:45 - WARNING - QR: таймаут ожидания результата
+[drone7] 11:28:46 - WARNING - QR: таймаут ожидания результата
+[drone7] 11:28:46 - INFO - QR: ничего не найдено
+[drone7] 11:28:46 - INFO - QR: ничего не найдено
+[drone7] 11:28:47 - INFO - QR: ничего не найдено
+[drone7] 11:28:47 - INFO - QR: ничего не найдено
+[drone7] 11:28:47 - INFO - QR: ничего не найдено
+[drone7] 11:28:48 - INFO - QR: ничего не найдено
+[drone7] 11:28:48 - INFO - QR: ничего не найдено
+[drone7] 11:28:48 - INFO - Arrived at waypoint 6
+[drone7] 11:28:48 - WARNING - No QR code found, using fallback recipe: 025SDD
+[drone7] 11:28:48 - INFO - Crafting: Diamond Pickaxe (recipe 0)
+[drone7] 11:28:48 - INFO - QR grid position: 2, Items needed: ['5', 'S', 'D', 'D']
+[drone7] 11:28:48 - INFO - Using main ArUco grid for crafting
+[drone7] 11:28:48 - INFO - QR code is at ArUco 70: (0.750, -1.250)
+[drone7] 11:28:48 - INFO - Building assignments based on recipe matrix:
+[drone7] 11:28:48 - INFO -   Grid[0,0] = D (ArUco 68) -> LEADER
+[drone7] 11:28:48 - INFO -   Grid[0,1] = D (ArUco 69) -> drone6
+[drone7] 11:28:48 - INFO -   Grid[0,2] = QR CODE LOCATION (ArUco 70) - SKIPPED
+[drone7] 11:28:48 - INFO -   Grid[1,0] = EMPTY (ArUco 71)
+[drone7] 11:28:48 - INFO -   Grid[1,1] = S (ArUco 72) -> LEADER
+[drone7] 11:28:48 - INFO -   Grid[1,2] = EMPTY (ArUco 73)
+[drone7] 11:28:48 - INFO -   Grid[2,0] = EMPTY (ArUco 74)
+[drone7] 11:28:48 - INFO -   Grid[2,1] = S (ArUco 75) -> drone19
+[drone7] 11:28:48 - INFO -   Grid[2,2] = EMPTY (ArUco 76)
+[drone7] 11:28:48 - INFO - Sending 2 assignments to follower drones
+[drone7] 11:28:48 - INFO - Broadcasting ASSIGN (attempt 1): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:28:48 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:28:48 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:28:49 - WARNING - No ACK for ASSIGN dea5 (attempt 1) - retrying...
+[drone7] 11:28:49 - INFO - Broadcasting ASSIGN (attempt 2): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:28:49 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:28:49 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:28:49 - WARNING - No ACK for ASSIGN dea5 (attempt 2) - retrying...
+[drone7] 11:28:49 - INFO - Broadcasting ASSIGN (attempt 3): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:28:49 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:28:49 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:28:50 - WARNING - No ACK for ASSIGN dea5 (attempt 3) - retrying...
+[drone7] 11:28:50 - INFO - Broadcasting ASSIGN (attempt 4): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:28:50 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:28:50 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:28:50 - WARNING - No ACK for ASSIGN dea5 (attempt 4) - retrying...
+[drone7] 11:28:50 - INFO - Broadcasting ASSIGN (attempt 5): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:28:50 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:28:50 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:28:51 - WARNING - No ACK for ASSIGN dea5 (attempt 5) - retrying...
+[drone7] 11:28:51 - INFO - Broadcasting ASSIGN (attempt 6): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:28:51 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:28:51 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:28:51 - WARNING - No ACK for ASSIGN dea5 (attempt 6) - retrying...
+[drone7] 11:28:51 - INFO - Broadcasting ASSIGN (attempt 7): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:28:51 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:28:51 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:28:52 - WARNING - No ACK for ASSIGN dea5 (attempt 7) - retrying...
+[drone7] 11:28:52 - INFO - Broadcasting ASSIGN (attempt 8): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:28:52 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:28:52 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:28:52 - WARNING - No ACK for ASSIGN dea5 (attempt 8) - retrying...
+[drone7] 11:28:52 - INFO - Broadcasting ASSIGN (attempt 9): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:28:52 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:28:52 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:28:53 - WARNING - No ACK for ASSIGN dea5 (attempt 9) - retrying...
+[drone7] 11:28:53 - INFO - Broadcasting ASSIGN (attempt 10): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:28:53 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:28:53 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:28:53 - WARNING - No ACK for ASSIGN dea5 (attempt 10) - retrying...
+[drone7] 11:28:53 - INFO - Broadcasting ASSIGN (attempt 11): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:28:53 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:28:53 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:28:54 - WARNING - No ACK for ASSIGN dea5 (attempt 11) - retrying...
+[drone7] 11:28:54 - INFO - Broadcasting ASSIGN (attempt 12): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:28:54 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:28:54 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:28:54 - WARNING - No ACK for ASSIGN dea5 (attempt 12) - retrying...
+[drone7] 11:28:54 - INFO - Broadcasting ASSIGN (attempt 13): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:28:54 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:28:54 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:28:55 - WARNING - No ACK for ASSIGN dea5 (attempt 13) - retrying...
+[drone7] 11:28:55 - INFO - Broadcasting ASSIGN (attempt 14): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:28:55 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:28:55 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:28:55 - WARNING - No ACK for ASSIGN dea5 (attempt 14) - retrying...
+[drone7] 11:28:56 - INFO - Broadcasting ASSIGN (attempt 15): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:28:56 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:28:56 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:28:56 - WARNING - No ACK for ASSIGN dea5 (attempt 15) - retrying...
+[drone7] 11:28:56 - INFO - Broadcasting ASSIGN (attempt 16): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:28:56 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:28:56 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:28:57 - WARNING - No ACK for ASSIGN dea5 (attempt 16) - retrying...
+[drone7] 11:28:57 - INFO - Broadcasting ASSIGN (attempt 17): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:28:57 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:28:57 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:28:57 - WARNING - No ACK for ASSIGN dea5 (attempt 17) - retrying...
+[drone7] 11:28:57 - INFO - Broadcasting ASSIGN (attempt 18): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:28:57 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:28:57 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:28:57 - INFO - Drone_234 expired (not seen for 5.0s)
+[drone7] 11:28:58 - WARNING - No ACK for ASSIGN dea5 (attempt 18) - retrying...
+[drone7] 11:28:58 - INFO - Broadcasting ASSIGN (attempt 19): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:28:58 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:28:58 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:28:58 - WARNING - No ACK for ASSIGN dea5 (attempt 19) - retrying...
+[drone7] 11:28:58 - INFO - Broadcasting ASSIGN (attempt 20): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:28:58 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:28:58 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:28:58 - INFO - Discovered drone_234 via telemetry at (-0.2, 1.3, 0.0)
+[drone7] 11:28:59 - WARNING - No ACK for ASSIGN dea5 (attempt 20) - retrying...
+[drone7] 11:28:59 - INFO - Broadcasting ASSIGN (attempt 21): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:28:59 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:28:59 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:28:59 - WARNING - No ACK for ASSIGN dea5 (attempt 21) - retrying...
+[drone7] 11:28:59 - INFO - Broadcasting ASSIGN (attempt 22): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:28:59 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:28:59 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:00 - WARNING - No ACK for ASSIGN dea5 (attempt 22) - retrying...
+[drone7] 11:29:00 - INFO - Broadcasting ASSIGN (attempt 23): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:00 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:00 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:00 - WARNING - No ACK for ASSIGN dea5 (attempt 23) - retrying...
+[drone7] 11:29:00 - INFO - Broadcasting ASSIGN (attempt 24): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:00 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:00 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:01 - WARNING - No ACK for ASSIGN dea5 (attempt 24) - retrying...
+[drone7] 11:29:01 - INFO - Broadcasting ASSIGN (attempt 25): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:01 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:01 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:01 - WARNING - No ACK for ASSIGN dea5 (attempt 25) - retrying...
+[drone7] 11:29:01 - INFO - Broadcasting ASSIGN (attempt 26): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:01 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:01 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:02 - WARNING - No ACK for ASSIGN dea5 (attempt 26) - retrying...
+[drone7] 11:29:02 - INFO - Broadcasting ASSIGN (attempt 27): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:02 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:02 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:02 - WARNING - No ACK for ASSIGN dea5 (attempt 27) - retrying...
+[drone7] 11:29:02 - INFO - Broadcasting ASSIGN (attempt 28): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:02 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:02 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:03 - WARNING - No ACK for ASSIGN dea5 (attempt 28) - retrying...
+[drone7] 11:29:03 - INFO - Broadcasting ASSIGN (attempt 29): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:03 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:03 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:03 - WARNING - No ACK for ASSIGN dea5 (attempt 29) - retrying...
+[drone7] 11:29:03 - INFO - Broadcasting ASSIGN (attempt 30): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:03 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:03 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:04 - WARNING - No ACK for ASSIGN dea5 (attempt 30) - retrying...
+[drone7] 11:29:04 - INFO - Broadcasting ASSIGN (attempt 31): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:04 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:04 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:04 - WARNING - No ACK for ASSIGN dea5 (attempt 31) - retrying...
+[drone7] 11:29:04 - INFO - Broadcasting ASSIGN (attempt 32): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:04 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:04 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:05 - WARNING - No ACK for ASSIGN dea5 (attempt 32) - retrying...
+[drone7] 11:29:05 - INFO - Broadcasting ASSIGN (attempt 33): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:05 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:05 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:06 - WARNING - No ACK for ASSIGN dea5 (attempt 33) - retrying...
+[drone7] 11:29:06 - INFO - Broadcasting ASSIGN (attempt 34): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:06 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:06 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:06 - WARNING - No ACK for ASSIGN dea5 (attempt 34) - retrying...
+[drone7] 11:29:06 - INFO - Broadcasting ASSIGN (attempt 35): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:06 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:06 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:07 - WARNING - No ACK for ASSIGN dea5 (attempt 35) - retrying...
+[drone7] 11:29:07 - INFO - Broadcasting ASSIGN (attempt 36): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:07 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:07 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+^C^C[drone7] 11:29:08 - WARNING - No ACK for ASSIGN dea5 (attempt 36) - retrying...
+[drone7] 11:29:08 - INFO - Broadcasting ASSIGN (attempt 37): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:08 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:08 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:08 - WARNING - No ACK for ASSIGN dea5 (attempt 37) - retrying...
+[drone7] 11:29:08 - INFO - Broadcasting ASSIGN (attempt 38): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:08 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:08 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:09 - WARNING - No ACK for ASSIGN dea5 (attempt 38) - retrying...
+[drone7] 11:29:09 - INFO - Broadcasting ASSIGN (attempt 39): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:09 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:09 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:09 - WARNING - No ACK for ASSIGN dea5 (attempt 39) - retrying...
+[drone7] 11:29:09 - INFO - Broadcasting ASSIGN (attempt 40): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:09 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:09 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:10 - INFO - Drone_234 expired (not seen for 5.0s)
+[drone7] 11:29:10 - WARNING - No ACK for ASSIGN dea5 (attempt 40) - retrying...
+[drone7] 11:29:10 - INFO - Broadcasting ASSIGN (attempt 41): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:10 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:10 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:10 - WARNING - No ACK for ASSIGN dea5 (attempt 41) - retrying...
+[drone7] 11:29:10 - INFO - Broadcasting ASSIGN (attempt 42): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:10 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:10 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:11 - WARNING - No ACK for ASSIGN dea5 (attempt 42) - retrying...
+[drone7] 11:29:11 - INFO - Broadcasting ASSIGN (attempt 43): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:11 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:11 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:11 - WARNING - No ACK for ASSIGN dea5 (attempt 43) - retrying...
+[drone7] 11:29:11 - INFO - Broadcasting ASSIGN (attempt 44): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:11 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:11 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:12 - WARNING - No ACK for ASSIGN dea5 (attempt 44) - retrying...
+[drone7] 11:29:12 - INFO - Broadcasting ASSIGN (attempt 45): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:12 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:12 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:12 - WARNING - No ACK for ASSIGN dea5 (attempt 45) - retrying...
+[drone7] 11:29:12 - INFO - Broadcasting ASSIGN (attempt 46): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:12 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:12 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:13 - WARNING - No ACK for ASSIGN dea5 (attempt 46) - retrying...
+[drone7] 11:29:13 - INFO - Broadcasting ASSIGN (attempt 47): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:13 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:13 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:13 - WARNING - No ACK for ASSIGN dea5 (attempt 47) - retrying...
+[drone7] 11:29:13 - INFO - Broadcasting ASSIGN (attempt 48): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:13 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:13 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:14 - WARNING - No ACK for ASSIGN dea5 (attempt 48) - retrying...
+[drone7] 11:29:14 - INFO - Broadcasting ASSIGN (attempt 49): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:14 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:14 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:14 - WARNING - No ACK for ASSIGN dea5 (attempt 49) - retrying...
+[drone7] 11:29:14 - INFO - Broadcasting ASSIGN (attempt 50): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:14 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:14 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:15 - WARNING - No ACK for ASSIGN dea5 (attempt 50) - retrying...
+[drone7] 11:29:15 - INFO - Broadcasting ASSIGN (attempt 51): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:15 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:15 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:15 - WARNING - No ACK for ASSIGN dea5 (attempt 51) - retrying...
+[drone7] 11:29:15 - INFO - Broadcasting ASSIGN (attempt 52): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:15 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:15 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:16 - INFO - Drone_189 expired (not seen for 5.0s)
+[drone7] 11:29:16 - WARNING - No ACK for ASSIGN dea5 (attempt 52) - retrying...
+[drone7] 11:29:16 - INFO - Broadcasting ASSIGN (attempt 53): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:16 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:16 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:16 - WARNING - No ACK for ASSIGN dea5 (attempt 53) - retrying...
+[drone7] 11:29:16 - INFO - Broadcasting ASSIGN (attempt 54): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:16 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:17 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+[drone7] 11:29:17 - WARNING - No ACK for ASSIGN dea5 (attempt 54) - retrying...
+[drone7] 11:29:17 - INFO - Broadcasting ASSIGN (attempt 55): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:17 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:17 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+z[drone7] 11:29:18 - WARNING - No ACK for ASSIGN dea5 (attempt 55) - retrying...
+[drone7] 11:29:18 - INFO - Broadcasting ASSIGN (attempt 56): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:18 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:18 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+zz[drone7] 11:29:18 - WARNING - No ACK for ASSIGN dea5 (attempt 56) - retrying...
+[drone7] 11:29:18 - INFO - Broadcasting ASSIGN (attempt 57): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:18 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:18 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+zzzz[drone7] 11:29:19 - WARNING - No ACK for ASSIGN dea5 (attempt 57) - retrying...
+[drone7] 11:29:19 - INFO - Broadcasting ASSIGN (attempt 58): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:19 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:19 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+x[drone7] 11:29:19 - WARNING - No ACK for ASSIGN dea5 (attempt 58) - retrying...
+[drone7] 11:29:19 - INFO - Broadcasting ASSIGN (attempt 59): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:19 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:19 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+zczcx[drone7] 11:29:20 - WARNING - No ACK for ASSIGN dea5 (attempt 59) - retrying...
+[drone7] 11:29:20 - INFO - Broadcasting ASSIGN (attempt 60): {'type': 'assign', 'to': 'drone6', 'cell': 1, 'item': 'D', 'target': {'x': -0.25, 'y': -1.25, 'z': 1.2}, 'color': {'r': 0, 'g': 180, 'b': 255}, 'recipe_id': 0, 'qr_grid_index': 2, 'aruco_id': 69, 'msg_id': 'dea5'}
+[drone7] 11:29:20 - WARNING - Message too long (213 chars), truncating to 125
+[drone7] 11:29:20 - INFO - Broadcast message: {"type": "assign", "to": "drone6", "cell": 1, "item": "D", "target": {"x": -0.25, "y": -1.25, "z": 1.2}, "color": {"r": 0, "g
+xz^Z
+[1]+  Stopped                 python3 ./drone/main_2.py

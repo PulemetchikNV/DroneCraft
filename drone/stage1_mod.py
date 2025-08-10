@@ -6,6 +6,12 @@ import logging
 import uuid
 import math
 
+# Загружаем переменные из .env файла
+try:
+    from .env_loader import get_env_with_default
+except ImportError:
+    from env_loader import get_env_with_default
+
 # rospy fallback for local testing
 try:
     import rospy
@@ -36,7 +42,8 @@ except Exception:
 
 class Stage1Mod:
     def __init__(self):
-        self.drone_name = os.environ.get('DRONE_NAME', 'drone')
+        # Загружаем конфигурацию из .env файла
+        self.drone_name = get_env_with_default('DRONE_NAME', 'drone')
         print(f"Running on drone: {self.drone_name}")
         self.logger = setup_logging(self.drone_name)
         

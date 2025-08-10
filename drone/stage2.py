@@ -6,6 +6,12 @@ import logging
 import uuid
 import math
 
+# Загружаем переменные из .env файла
+try:
+    from .env_loader import get_env_with_default
+except ImportError:
+    from env_loader import get_env_with_default
+
 # rospy fallback for local testing
 try:
     import rospy
@@ -111,7 +117,7 @@ def get_aruco_coordinates(grid_type='main'):
     Returns:
         dict: {grid_index: {'x': x, 'y': y, 'aruco_id': id}}
     """
-    grid_map = ARUCO_GRID if grid_type == 'main' else ARUCO_GRID_ALT
+    grid_map = ARUCO_GRID_ALT
     positions = {}
     
     for row in range(3):
@@ -154,7 +160,8 @@ def pick_color_for_item(item):
 
 class Stage2:
     def __init__(self):
-        self.drone_name = os.environ.get('DRONE_NAME', 'drone')
+        # Загружаем конфигурацию из .env файла
+        self.drone_name = get_env_with_default('DRONE_NAME', 'drone')
         print(f"Running Stage2 on drone: {self.drone_name}")
         self.logger = setup_logging(self.drone_name)
         
@@ -166,13 +173,13 @@ class Stage2:
         self.logger.info(f"Stage2 Role: {'LEADER' if self.is_leader else 'FOLLOWER'}")
         
         # Drone capabilities ('S' = stick, 'D' = diamond, 'ANY' = can be anything)
-        self.capability = os.getenv('DRONE_ROLE', 'ANY').upper()
+        self.capability = get_env_with_default('DRONE_ROLE', 'ANY').upper()
         self.logger.info(f"Drone capability: {self.capability}")
 
         # Grid/flight params
-        self.cell_size = float(os.getenv('GRID_CELL_SIZE', '0.5'))
-        self.target_z = float(os.getenv('TARGET_Z', '1.2'))
-        self.speed = float(os.getenv('NAV_SPEED', '0.3'))
+        self.cell_size = get_env_with_default('GRID_CELL_SIZE', 0.5, float)
+        self.target_z = get_env_with_default('TARGET_Z', 1.2, float)
+        self.speed = get_env_with_default('NAV_SPEED', 0.3, float)
 
         # skyros
         self.swarm = None
@@ -384,7 +391,7 @@ class Stage2:
 
         # Fall back to environment or default recipe if QR not found
         if not recipe_code:
-            recipe_code = os.getenv('RECIPE', '025SDD')
+            recipe_code = get_env_with_default('RECIPE', '025SDD')
             self.logger.warning(f"No QR code found, using fallback recipe: {recipe_code}")
 
         # 3) Parse recipe and determine crafting grid
@@ -402,7 +409,7 @@ class Stage2:
             return
 
         # 4) Get ArUco grid coordinates (use main grid by default)
-        grid_type = os.getenv('ARUCO_GRID_TYPE', 'main')  # 'main' or 'alt'
+        grid_type = get_env_with_default('ARUCO_GRID_TYPE', 'main')  # 'main' or 'alt'
         grid_positions = get_aruco_coordinates(grid_type)
         
         self.logger.info(f"Using {grid_type} ArUco grid for crafting")

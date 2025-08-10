@@ -1,0 +1,13 @@
+Drone name from env: drone19
+Running Stage2 on drone: drone19
+[drone19] 11:27:48 - INFO - Stage2 Role: FOLLOWER
+[drone19] 11:27:48 - INFO - Drone capability: S
+[drone19] 11:27:48 - INFO - Custom message callback set
+[drone19] 11:27:48 - INFO - Drone drone19 started successfully
+[drone19] 11:27:48 - INFO - Stage2 follower waiting for assignment...
+[drone19] 11:27:49 - INFO - Discovered drone_189 via telemetry at (0.8, 1.3, 0.0)
+[drone19] 11:28:02 - INFO - Discovered drone_156 via telemetry at (-1.2, 1.3, 0.0)
+[drone19] 11:28:57 - INFO - Drone_156 expired (not seen for 5.0s)
+^C[drone19] 11:29:10 - WARNING - No assignment received, exiting
+[drone19] 11:29:10 - INFO - Drone drone19 stopped
+[drone19] 11:29:10 - INFO - Skyros link stopped
