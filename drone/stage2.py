@@ -444,7 +444,7 @@ class Stage2:
         # 6) Send assignments to followers with reliable messaging
         self.logger.info(f"Sending {len(assignments)} assignments to follower drones")
         for assignment in assignments:
-            # Сокращаем ключи для broadcast
+            # Сокращаем ключи для broadcast, убираем r,g,b,rid,qid,aid
             short_assignment = {
                 't': 'a',  # assign
                 'to': assignment['to'],
@@ -453,12 +453,7 @@ class Stage2:
                 'x': round(assignment['target']['x'], 3),
                 'y': round(assignment['target']['y'], 3),
                 'z': round(assignment['target']['z'], 2),
-                'r': assignment['color']['r'],
-                'g': assignment['color']['g'],
-                'b': assignment['color']['b'],
-                'rid': assignment['recipe_id'],
-                'qid': assignment['qr_grid_index'],
-                'aid': assignment['aruco_id']
+                'mid': uuid.uuid4().hex[:4]
             }
             success = self._broadcast_reliable(short_assignment)
             if not success:
@@ -503,7 +498,7 @@ class Stage2:
 
         # 9) Final formation check (optional visual indicator)
         self.logger.info("Sending final blink command")
-        self._broadcast_reliable({'t': 'b', 'to': '*', 'r': 0, 'g': 255, 'b': 0, 'mid': uuid.uuid4().hex[:4]})
+        self._broadcast_reliable({'t': 'b', 'to': '*', 'mid': uuid.uuid4().hex[:4]})
         
         # 10) Land all drones (leader last)
         self.logger.info("Sending LAND command to all drones")
