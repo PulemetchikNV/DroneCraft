@@ -186,22 +186,26 @@ def row_col_to_grid_index(row, col):
 
 def get_simple_grid_coordinates():
     """
-    Генерирует простую сетку 3x3 с позициями дронов от (0,0) с отступом 1 метр
-    Для нового формата QR-кодов с 3 дронами
+    Генерирует простую сетку 3x3 с шагом 1 м и ПОВОРОТОМ поля на 90° против часовой стрелки
+    относительно центра сетки (1,1). Это эквивалентно преобразованию:
+      исходно: x = col, y = row
+      после поворота CCW: x = 2 - row, y = col
     Returns:
         dict: {grid_index: {'x': x, 'y': y}}
     """
     positions = {}
-    
+
     for row in range(3):
         for col in range(3):
             grid_index = row_col_to_grid_index(row, col)
+            x_rot = float(2 - row)
+            y_rot = float(col)
             positions[grid_index] = {
-                'x': float(col),      # 0, 1, 2 метра по X
-                'y': float(row),      # 0, 1, 2 метра по Y  
-                'aruco_id': None      # Не используем ArUco маркеры
+                'x': x_rot,
+                'y': y_rot,
+                'aruco_id': None
             }
-    
+
     return positions
 
 
@@ -768,6 +772,19 @@ class Stage2:
         self.fc.set_led(**color)
 
         # Ожидание команды на посадку
+        self.logger.info("Holding position before land...")
+        # увеличенная пауза ожидания (зависание) перед посадкой
+        HOLD_BEFORE_LAND_SEC = float(os.environ.get('HOLD_BEFORE_LAND_SEC', '6.0'))
+        hold_start = time.time()
+        while not rospy.is_shutdown():
+            # если пришла команда на посадку — выходим из холда
+            if self._land_event.is_set():
+                break
+            # иначе держим позицию заданное время
+            if time.time() - hold_start >= HOLD_BEFORE_LAND_SEC:
+                break
+            time.sleep(0.2)
+
         self.logger.info("Waiting for land command...")
         while not rospy.is_shutdown():
             if self._land_event.wait(timeout=0.5):
